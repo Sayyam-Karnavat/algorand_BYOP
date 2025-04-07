@@ -25,3 +25,18 @@ class ARC19:
         self.algod_token = "a" * 64
         self.algod_client = AlgodClient(algod_token=self.algod_token , algod_address=self.algod_address)
         self.algod_indexer = IndexerClient(indexer_token=self.algod_token , indexer_address=self.indexer_address)
+
+
+        # User account
+        self.user_account = algokit_utils.get_localnet_default_account(client=self.algod_client)
+        self.private_key = self.user_account.private_key
+        self.user_address = self.user_account.address
+
+        # Pinata
+        self.pinata_key = os.environ['IPFS_API_KEY']
+        self.pinata_secret_key = os.environ['IPFS_SECRET_KEY']  
+
+        # Suggested params
+        self.sp = self.algod_client.suggested_params()
+
+        print("Private Key:", self.private_key, "\nAddress:", self.user_address)
