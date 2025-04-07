@@ -79,3 +79,18 @@ class ARC19:
 
     def hash_from_cid(self,cid):
         return multihash.decode(make_cid(cid).multihash).name
+    
+
+    def create_url_from_cid(self,cid):
+        version = self.version_from_cid(cid)
+        print("Version:", version)
+        codec = self.codec_from_cid(cid)
+        print("Codec:", codec)
+        hash = self.hash_from_cid(cid)
+        print("Hash:", hash)
+        url = "template-ipfs://{ipfscid:" + f"{version}:{codec}:reserve:{hash}" + "}"
+        valid = re.compile(
+            r"template-ipfs://{ipfscid:(?P<version>[01]):(?P<codec>[a-z0-9\-]+):(?P<field>[a-z0-9\-]+):(?P<hash>[a-z0-9\-]+)}"
+        )
+        assert bool(valid.match(url))
+        return url
