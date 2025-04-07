@@ -40,3 +40,27 @@ class ARC19:
         self.sp = self.algod_client.suggested_params()
 
         print("Private Key:", self.private_key, "\nAddress:", self.user_address)
+
+    def upload_metadata(self , file_path):
+        '''
+        This will upload the digital assets to IPFS
+        Returns the IPFS hash which will be used to convert to reserve address
+        '''
+        url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+        headers = {
+            "pinata_api_key": self.pinata_key,
+            "pinata_secret_api_key": self.pinata_secret_key,
+        }
+        filename = os.path.basename(file_path)
+        with open(file_path , 'rb') as file:
+
+            files = {"file" :(filename , file)}
+            response = requests.post(url=url , files=files , headers=headers)
+            if response.status_code == 200:
+                ipfs_hash = response.json().get("IpfsHash")
+                print("IPFS Hash:", ipfs_hash)
+                return ipfs_hash
+            
+            else:
+                print("Failed to upload file :-" , response.status_code , response.text)
+                return None
