@@ -26,7 +26,6 @@ class ARC19:
         self.algod_client = AlgodClient(algod_token=self.algod_token , algod_address=self.algod_address)
         self.algod_indexer = IndexerClient(indexer_token=self.algod_token , indexer_address=self.indexer_address)
 
-
         # User account
         self.user_account = algokit_utils.get_localnet_default_account(client=self.algod_client)
         self.private_key = self.user_account.private_key
@@ -40,6 +39,7 @@ class ARC19:
         self.sp = self.algod_client.suggested_params()
 
         print("Private Key:", self.private_key, "\nAddress:", self.user_address)
+
 
     def upload_metadata(self , file_path):
         '''
@@ -79,7 +79,7 @@ class ARC19:
 
     def hash_from_cid(self,cid):
         return multihash.decode(make_cid(cid).multihash).name
-    
+
 
     def create_url_from_cid(self,cid):
         version = self.version_from_cid(cid)
@@ -94,6 +94,7 @@ class ARC19:
         )
         assert bool(valid.match(url))
         return url
+
 
     def create_metadata(self , asset_name , description , ipfs_hash , image_mimetype = "application/pdf"):
 
@@ -139,7 +140,6 @@ class ARC19:
         print("Transaction sent :- {}".format(tx_id))
 
         return tx_id
-    
 
 if __name__ == "__main__":
 
@@ -171,3 +171,4 @@ if __name__ == "__main__":
 
     else:
         print("CID is empty :( ")
+
