@@ -94,3 +94,22 @@ class ARC19:
         )
         assert bool(valid.match(url))
         return url
+
+    def create_metadata(self , asset_name , description , ipfs_hash , image_mimetype = "application/pdf"):
+
+
+        metadata = {
+            "name" : asset_name,
+            "description" : description,
+            "image" : f"ipfs://{ipfs_hash}",
+            "creator" : self.user_address,
+            "mimetype" : image_mimetype
+        }
+
+        metadata_text = json.dumps(metadata , separators=(",",":"))
+        print("Metadata Text :-" , metadata_text)
+        
+        metadata_hash = hashlib.sha256(metadata_text.encode()).digest()
+        print("Metadata Hash :-" , metadata_hash)
+
+        return metadata_hash
