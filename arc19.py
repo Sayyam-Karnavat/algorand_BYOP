@@ -113,3 +113,29 @@ class ARC19:
         print("Metadata Hash :-" , metadata_hash)
 
         return metadata_hash
+    
+
+    def create_asset(self , metadata_hash , reserve_address , url):
+
+        usigned_txn = transaction.AssetCreateTxn(
+            sender=self.user_address,
+            sp=self.sp,
+            total=1, # Because this is an NFT
+            decimals=0 ,# Because this is an NFT
+            default_frozen=False,
+            asset_name="ARC19",
+            unit_name="ARC19NFT",
+            manager=self.user_address,
+            clawback=self.user_address,
+            reserve=reserve_address,
+            url=url,
+            metadata_hash=metadata_hash
+        )
+
+        signed_txn = usigned_txn.sign(self.private_key)
+        tx_id = self.algod_client.send_transaction(signed_txn)
+        transaction.wait_for_confirmation(algod_client=self.algod_client , txid=tx_id)
+
+        print("Transaction sent :- {}".format(tx_id))
+
+        return tx_id
