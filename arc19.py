@@ -64,3 +64,18 @@ class ARC19:
             else:
                 print("Failed to upload file :-" , response.status_code , response.text)
                 return None
+            
+    def reserve_address_from_cid(self,cid):
+        decoded_cid = multihash.decode(make_cid(cid).multihash)
+        reserve_address = encoding.encode_address(decoded_cid.digest)
+        assert encoding.is_valid_address(reserve_address)
+        return reserve_address
+        
+    def version_from_cid(self,cid):
+        return make_cid(cid).version
+
+    def codec_from_cid(self,cid):
+        return make_cid(cid).codec
+
+    def hash_from_cid(self,cid):
+        return multihash.decode(make_cid(cid).multihash).name
