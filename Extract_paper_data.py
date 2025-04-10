@@ -30,3 +30,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
                 paper_title = paper.title
                 paper_abstract = paper.summary
                 pdf_url = paper.pdf_url
+
+                # Download the PDF file
+                response = requests.get(pdf_url, timeout=10)
