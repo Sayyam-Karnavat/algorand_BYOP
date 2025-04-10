@@ -18,3 +18,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
 
         # Fetch results
         results = list(client.results(search))  # Convert to list to process all results
+
+        if not results:
+            raise ValueError("No papers found for the given query.")
