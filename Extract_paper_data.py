@@ -24,3 +24,9 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
         
         # Open the output file once in write mode to overwrite any existing content
         with open("paper_content.txt", "w", encoding="utf-8") as output_file:
+            # Process each paper one by one
+            for index, paper in enumerate(results, 1):
+                # Extract metadata
+                paper_title = paper.title
+                paper_abstract = paper.summary
+                pdf_url = paper.pdf_url
