@@ -15,3 +15,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
             max_results=max_results,
             sort_by=arxiv.SortCriterion.SubmittedDate
         )
+
+        # Fetch results
+        results = list(client.results(search))  # Convert to list to process all results
