@@ -38,3 +38,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
 
                 with open(pdf_file_path, "wb") as file:
                     file.write(response.content)
+
+                # Extract text from the downloaded PDF
+                paper_text = extract_text_from_pdf(pdf_file_path)
