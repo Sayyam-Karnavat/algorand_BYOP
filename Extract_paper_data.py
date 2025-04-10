@@ -21,3 +21,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
 
         if not results:
             raise ValueError("No papers found for the given query.")
+        
+        # Open the output file once in write mode to overwrite any existing content
+        with open("paper_content.txt", "w", encoding="utf-8") as output_file:
