@@ -35,3 +35,6 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
                 response = requests.get(pdf_url, timeout=10)
                 response.raise_for_status()  # Raise an error for bad HTTP responses
                 pdf_file_path = f"downloaded_paper_{index}.pdf"
+
+                with open(pdf_file_path, "wb") as file:
+                    file.write(response.content)
