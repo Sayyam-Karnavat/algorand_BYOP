@@ -8,3 +8,10 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
     try:
         # Initialize the arXiv client
         client = arxiv.Client()
+
+        # Create a search object
+        search = arxiv.Search(
+            query=query,
+            max_results=max_results,
+            sort_by=arxiv.SortCriterion.SubmittedDate
+        )
