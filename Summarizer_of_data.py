@@ -19,7 +19,7 @@ def summarize_text(text):
     )
     
     # Initialize the LLaMA model
-    llm = OllamaLLM(model="llama3.2:1b")
+    llm = OllamaLLM(model="llama3")
     chain = prompt_template | llm
     
     try:
@@ -96,31 +96,3 @@ def save_to_pdf(summary, paper_title, output_dir="summaries"):
         print(f"Saved summary to {pdf_filename}")
     except Exception as e:
         print(f"Error saving PDF {pdf_filename}: {e}")
-
-if __name__ == "__main__":
-    # Path to the paper content file
-    file_path = "paper_content.txt"
-    
-    # Extract the content for each paper from the file
-    paper_contents = extract_text_from_file(file_path)
-    
-    if paper_contents:
-        # Process and summarize each paper individually
-        for i, paper_content in enumerate(paper_contents, 1):
-            print(f"\n{'*'*50}")
-            print(f"Processing Paper {i}:")
-            print(f"{'*'*50}")
-            
-            # Extract paper title
-            paper_title = extract_paper_title(paper_content)
-            print(f"Paper Title: {paper_title}")
-            
-            # Summarize the content of this paper
-            summary = summarize_text(paper_content)
-            print(summary)
-            print(f"{'*'*50}\n")
-            
-            # Save summary to PDF
-            save_to_pdf(summary, paper_title)
-    else:
-        print("No content to summarize.")
