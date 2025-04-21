@@ -3,7 +3,7 @@ import requests
 import fitz  # PyMuPDF for PDF text extraction
 import os
 
-def fetch_paper(query="Artificial Intelligence", max_results=3):
+def fetch_paper(query="Artificial Intelligence", max_results=3 , save_file = "paper_content.txt"):
     """Fetch research papers' titles, abstracts, and content from arXiv."""
     try:
         # Initialize the arXiv client
@@ -23,7 +23,7 @@ def fetch_paper(query="Artificial Intelligence", max_results=3):
             raise ValueError("No papers found for the given query.")
 
         # Open the output file once in write mode to overwrite any existing content
-        with open("paper_content.txt", "w", encoding="utf-8") as output_file:
+        with open(save_file, "w", encoding="utf-8") as output_file:
             # Process each paper one by one
             for index, paper in enumerate(results, 1):
                 # Extract metadata
