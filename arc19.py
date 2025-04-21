@@ -37,8 +37,6 @@ class ARC19:
         # Suggested params
         self.sp = self.algod_client.suggested_params()
 
-        print("Private Key:", self.private_key, "\nAddress:", self.user_address)
-
 
     def upload_metadata(self , file_path):
         '''
@@ -57,7 +55,6 @@ class ARC19:
             response = requests.post(url=url , files=files , headers=headers)
             if response.status_code == 200:
                 ipfs_hash = response.json().get("IpfsHash")
-                print("IPFS Hash:", ipfs_hash)
                 return ipfs_hash
             
             else:
@@ -82,11 +79,8 @@ class ARC19:
 
     def create_url_from_cid(self,cid):
         version = self.version_from_cid(cid)
-        print("Version:", version)
         codec = self.codec_from_cid(cid)
-        print("Codec:", codec)
         hash = self.hash_from_cid(cid)
-        print("Hash:", hash)
         url = "template-ipfs://{ipfscid:" + f"{version}:{codec}:reserve:{hash}" + "}"
         valid = re.compile(
             r"template-ipfs://{ipfscid:(?P<version>[01]):(?P<codec>[a-z0-9\-]+):(?P<field>[a-z0-9\-]+):(?P<hash>[a-z0-9\-]+)}"
@@ -106,11 +100,10 @@ class ARC19:
             "mimetype" : image_mimetype
         }
 
+        print("NFT URL :-" , metadata['image'])
         metadata_text = json.dumps(metadata , separators=(",",":"))
-        print("Metadata Text :-" , metadata_text)
         
         metadata_hash = hashlib.sha256(metadata_text.encode()).digest()
-        print("Metadata Hash :-" , metadata_hash)
 
         return metadata_hash
     
@@ -120,8 +113,8 @@ class ARC19:
         usigned_txn = transaction.AssetCreateTxn(
             sender=self.user_address,
             sp=self.sp,
-            total=1, # Because this is an NFT
-            decimals=0 ,# Because this is an NFT
+            total=1, # Non divisible NFT
+            decimals=0 ,# Non divisible NFT
             default_frozen=False,
             asset_name="ARC19",
             unit_name="ARC19NFT",
@@ -136,7 +129,7 @@ class ARC19:
         tx_id = self.algod_client.send_transaction(signed_txn)
         transaction.wait_for_confirmation(algod_client=self.algod_client , txid=tx_id)
 
-        print("Transaction sent :- {}".format(tx_id))
+        
 
         return tx_id
 

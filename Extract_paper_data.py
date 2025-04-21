@@ -3,7 +3,7 @@ import requests
 import fitz  # PyMuPDF for PDF text extraction
 import os
 
-def fetch_paper(query="Artificial Intelligence", max_results=3 , save_file = "paper_content.txt"):
+def fetch_paper(query, max_results=3 , save_file = "paper_content.txt"):
     """Fetch research papers' titles, abstracts, and content from arXiv."""
     try:
         # Initialize the arXiv client
@@ -80,6 +80,3 @@ def extract_text_from_pdf(pdf_file_path):
     except Exception as e:
         print(f"Error extracting text from PDF: {e}")
         return ""
-
-if __name__ == "__main__":
-    fetch_paper(query="Artificial Intelligence", max_results=3)
