@@ -10,7 +10,7 @@ if __name__ == "__main__":
     save_file_path = "research_content.txt"
     pdf_summary_directory = "summaries"
 
-    research_about = "Research regarding latest blockchain findings"
+    research_about = "Latest blockchain research"
 
     fetch_paper(query=research_about , max_results=3, save_file=save_file_path)
     paper_contents = extract_text_from_file(save_file_path)
