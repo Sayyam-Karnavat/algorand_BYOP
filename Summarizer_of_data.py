@@ -11,9 +11,7 @@ def summarize_text(text):
         input_variables=["text"],
         template="""
         Summarize the following research paper content into concise bullet points:
-        
         {text}
-        
         Provide clear, concise, and comprehensive bullet points covering the main ideas, methods, results, and conclusions.
         """
     )

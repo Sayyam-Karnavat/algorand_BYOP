@@ -6,6 +6,7 @@ import os
 def fetch_paper(query, max_results=3 , save_file = "paper_content.txt"):
     """Fetch research papers' titles, abstracts, and content from arXiv."""
     try:
+        print("Query :-" , query)
         # Initialize the arXiv client
         client = arxiv.Client()
 
