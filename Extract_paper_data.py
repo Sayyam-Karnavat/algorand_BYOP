@@ -17,7 +17,7 @@ def save_fetched_paper(pdf_url, history_file="fetched_papers.txt"):
     with open(history_file, "a", encoding="utf-8") as file:
         file.write(f"{pdf_url}\n")
 
-def fetch_paper(query="Artificial Intelligence", max_results=3, start_index=0):
+def fetch_paper(save_file,query="Artificial Intelligence", max_results=3, start_index=0 ):
     """Fetch unique research papers' titles, abstracts, and content from arXiv."""
     try:
         # Load previously fetched papers
@@ -53,7 +53,7 @@ def fetch_paper(query="Artificial Intelligence", max_results=3, start_index=0):
         selected_results = unique_results[:max_results]
 
         # Open the output file in write mode to overwrite existing content
-        with open("paper_content.txt", "w", encoding="utf-8") as output_file:
+        with open(save_file, "w", encoding="utf-8") as output_file:
             # Process each paper
             for index, paper in enumerate(selected_results, 1):
                 # Extract metadata
