@@ -17,7 +17,8 @@ load_dotenv()
 
 class ARC19:
     def __init__(self):
-
+        
+        
         # Initialize client
         self.algod_address = "http://localhost:4001"
         self.indexer_address = "http://localhost:8980"
@@ -100,14 +101,14 @@ class ARC19:
             "mimetype" : image_mimetype
         }
 
-        print("NFT URL :-" , metadata['image'])
+        print(f"NFT URL :- https://indigo-central-dragonfly-340.mypinata.cloud/ipfs/{ipfs_hash}")
         metadata_text = json.dumps(metadata , separators=(",",":"))
         
         metadata_hash = hashlib.sha256(metadata_text.encode()).digest()
 
         return metadata_hash
     
-
+    
     def create_asset(self , metadata_hash , reserve_address , url):
 
         usigned_txn = transaction.AssetCreateTxn(

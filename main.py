@@ -2,7 +2,7 @@ from arc19 import ARC19
 from Extract_paper_data import fetch_paper
 from Summarizer_of_data import extract_text_from_file , save_to_pdf , extract_paper_title , summarize_text
 import os
-
+import shutil
 
 if __name__ == "__main__":
     
@@ -68,6 +68,10 @@ if __name__ == "__main__":
 
             print("Transaction :\n https://lora.algokit.io/localnet/transaction/{}".format(transaction_id))
 
-
+            
+            # Remove the directory after pdf's are minted and uploaded to IPFS as ARC19
+            
         else:
             print("CID is empty :( ")
+
+    shutil.rmtree(pdf_summary_directory)
