@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     research_about = "Latest blockchain research"
 
-    fetch_paper(query=research_about , max_results=3, save_file=save_file_path)
+    fetch_paper(query=research_about , max_results=1, save_file=save_file_path)
     paper_contents = extract_text_from_file(save_file_path)
 
 

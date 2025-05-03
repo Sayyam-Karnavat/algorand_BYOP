@@ -17,7 +17,7 @@ def summarize_text(text):
     )
     
     # Initialize the LLaMA model
-    llm = OllamaLLM(model="llama3")
+    llm = OllamaLLM(model="llama3.1:latest")
     chain = prompt_template | llm
     
     try:

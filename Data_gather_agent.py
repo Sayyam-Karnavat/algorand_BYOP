@@ -5,7 +5,7 @@ from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 
 # Initialize the language model (Ollama with Llama3)
-llm = OllamaLLM(model="llama3:latest")
+llm = OllamaLLM(model="llama3.1:latest")
 
 # Create Arxiv tool
 arxiv_tool = ArxivQueryRun()
