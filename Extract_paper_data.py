@@ -55,7 +55,6 @@ def fetch_paper(save_file, query="Artificial Intelligence", max_results=3, start
         random.shuffle(unique_results)
         selected_results = unique_results[:max_results]
 
-        # Open the output file in write mode to overwrite existing content
         with open(save_file, "w", encoding="utf-8") as output_file:
             for index, paper in enumerate(selected_results, 1):
                 try:
@@ -87,28 +86,22 @@ def fetch_paper(save_file, query="Artificial Intelligence", max_results=3, start
                 except Exception as e:
                     print(f"Error processing paper at index {index}: {e}")
 
-        # Save the URLs of fetched papers to history file
-        with open(history_file, "a", encoding="utf-8") as file:
-            for url in selected_results:
-                file.write(url.pdf_url + "\n")
+        # Save fetched papers to history file
+        for paper in selected_results:
+            save_fetched_paper(paper.pdf_url)
 
     except Exception as e:
         print(f"Error fetching papers: {e}")
 
-def extract_text_from_pdf(pdf_path):
-    try:
+def extract_text_from_pdf(pdf_file_path):
+    """Extract text from a PDF using PyMuPDF."""
+    with fitz.open(pdf_file_path) as doc:
         text = ""
-        with fitz.open(pdf_path) as doc:
-            for page_num in range(doc.page_count):
-                page = doc.load_page(page_num)
-                text += page.get_text("text")
+        for page in doc:
+            text += page.get_text()
         return text
-    except Exception as e:
-        print(f"Error extracting text from PDF: {e}")
-        return ""
 
 if __name__ == "__main__":
-    # Use a random start index to get different papers each run
     random.seed(time.time())  # Seed with current time for varied results
     start_index = random.randint(0, 20)  # Skip 0–20 papers randomly
     print(f"Starting at index: {start_index}")

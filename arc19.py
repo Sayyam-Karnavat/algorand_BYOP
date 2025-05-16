@@ -1,4 +1,3 @@
-```python
 import hashlib
 import json
 import os
@@ -121,4 +120,3 @@ class ARC19:
 if __name__ == "__main__":
     # Call load_env_vars() here or wherever it's necessary
     load_env_vars()
-```
