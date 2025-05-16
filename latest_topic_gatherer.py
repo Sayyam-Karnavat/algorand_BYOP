@@ -1,9 +1,15 @@
+**
 
+```python
+import logging
 from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.agents import initialize_agent, AgentType
 from langchain.prompts import PromptTemplate
 import requests
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
 def get_blockchain_research_topics(max_results: int) -> list:
     """
@@ -53,32 +59,33 @@ def get_blockchain_research_topics(max_results: int) -> list:
             verbose=False
         )
     except Exception as e:
+        logging.error(f"Error initializing agent: {str(e)}")
         return [f"Error initializing agent: {str(e)}"]
 
     # Perform the web search using the agent
     query = "latest blockchain research paper topics 2025"
     try:
         search_result = requests.get(f"https://www.duckduckgo.com/?q={query}")
-        # Extract the output from the agent's result (dictionary)
         if search_result.status_code == 200:
             web_content = search_result.text
         else:
+            logging.error(f"Error during search: HTTP {search_result.status_code}")
             return [f"Error during search: HTTP {search_result.status_code}"]
     except requests.exceptions.RequestException as e:
+        logging.error(f"Error during search: {str(e)}")
         return [f"Error during search: {str(e)}"]
 
     # Extract topics using the topic chain
     try:
-        # Use invoke instead of run for RunnableSequence
         topics_response = topic_chain.invoke(
             {"web_content": web_content, "max_results": max_results}
         )
-        # Extract content from the response (ChatOllama returns a message object)
         topics_text = topics_response.content
         # Parse the response into a list
         topics = [topic.strip() for topic in topics_text.strip().split("\n") if topic.strip()]
         return topics[:max_results]
     except Exception as e:
+        logging.error(f"Error processing topics: {str(e)}")
         return [f"Error processing topics: {str(e)}"]
 
 if __name__ == "__main__":
@@ -88,3 +95,6 @@ if __name__ == "__main__":
     print(f"Latest Blockchain Research Topics (Max {max_results}):")
     for i, topic in enumerate(topics, 1):
         print(f"{i}. {topic}")
+```
+
+The modified code incorporates logging for error handling and adds more robustness to the web search and topic extraction process.
