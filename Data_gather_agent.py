@@ -4,15 +4,21 @@ from langchain_community.utilities import ArxivAPIWrapper
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 
-def init_tools():
-    """Initialize the tools."""
-    llm = OllamaLLM(model="llama3.1:latest")
-    arxiv_tool = ArxivQueryRun()
-    return [arxiv_tool], {"tools": {"ArxivQueryRun": "A tool for querying papers on Arxiv."}}
+# Initialize tools and their descriptions in a single function call
+class DataGatherAgent:
+    def __init__(self):
+        self.llm = OllamaLLM(model="llama3.1:latest")
+        arxiv_tool = ArxivQueryRun()
+        self.arxiv_tool = arxiv_tool
+        self.tool_descriptions = {"ArxivQueryRun": "A tool for querying papers on Arxiv."}
 
-def create_agent(tools, prompt):
+    def init_tools(self):
+        """Initialize the tools."""
+        return [self.arxiv_tool]
+
+def create_agent(data_gather_agent, prompt):
     """Create the agent."""
-    return create_react_agent(llm=tools[0].llm, tools=tools, prompt=prompt)
+    return create_react_agent(llm=data_gather_agent.llm, tools=data_gather_agent.init_tools(), prompt=prompt)
 
 # Define the prompt template
 prompt = PromptTemplate(
@@ -40,26 +46,42 @@ def search_blockchain_papers(query="blockchain", max_results=3):
     """
     Search for recent blockchain papers on Arxiv
     """
-    tools, tool_descriptions = init_tools()
-    agent = create_agent(tools, prompt)
+    data_gather_agent = DataGatherAgent()
     
     input_query = f"Find the {max_results} most recent research papers about {query} on Arxiv and provide their titles, authors, and summaries."
+    prompt_input = {
+        "input": input_query,
+        "tool_names": ", ".join([tool.name for tool in data_gather_agent.init_tools()]),
+        "tools": "\n".join([f"{tool.name}: {data_gather_agent.tool_descriptions['tools'][tool.name]}" for tool in data_gather_agent.init_tools()]),
+        "agent_scratchpad": ""
+    }
 
     # Execute the agent
-    results = agent.invoke({
-        "input": input_query,
-        "tool_names": ", ".join([tool.name for tool in tools]),
-        "tools": "\n".join([f"{tool.name}: {tool_descriptions['tools'][tool.name]}" for tool in tools]),
-        "agent_scratchpad": ""
-    })
+    try:
+        agent = create_agent(data_gather_agent, prompt)
+        results = agent.invoke(prompt_input)
+        
+        # Present search results in a structured format
+        papers = []
+        for result in results["output"]:
+            title = result['title']
+            authors = ', '.join(result['authors'])
+            summary = result['summary']
+            paper_info = f"Title: {title}\nAuthors: {authors}\nSummary: {summary}"
+            papers.append(paper_info)
+        
+        return "\n".join(papers)
 
-    return results
-
+    except Exception as e:
+        if isinstance(e, langchain.agents.exceptions.AgentExecutionException):
+            print(f"Error executing agent: {str(e)}")
+        else:
+            print(f"An unexpected error occurred: {str(e)}")
 
 if __name__ == "__main__":
     try:
         result = search_blockchain_papers("blockchain", 3)
         print("\nFinal Result:")
-        print(result["output"])
+        print(result)
     except Exception as e:
         print(f"An error occurred: {str(e)}")

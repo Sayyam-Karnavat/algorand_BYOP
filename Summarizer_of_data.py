@@ -1,3 +1,4 @@
+```python
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 import re
@@ -5,6 +6,8 @@ import os
 
 def summarize_text(text):
     """Summarizes extracted text into bullet points."""
+    
+    # Define a more robust prompt template that doesn't require manual input for the summary length.
     prompt_template = PromptTemplate(
         input_variables=["text"],
         template="""
@@ -21,7 +24,16 @@ def summarize_text(text):
     try:
         # Invoke the chain to get the summary
         summary = chain.invoke({"text": text})
-        return summary
+        
+        # Post-processing to convert the summary into bullet points.
+        if "bullet points" in str(summary).lower():
+            summary = str(summary).split("bullet points:")[1]
+            summary_lines = [s.strip() for s in summary.split("\n")]
+            summary_bullet_points = "\n".join([f"* {point}" for point in summary_lines])
+            
+            return summary_bullet_points
+        else:
+            return summary
     except Exception as e:
         print(f"Error during summarization: {e}")
         return "Summarization failed."
@@ -33,8 +45,8 @@ def extract_text_from_file(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
         
-        # Split the content by the separator used in the previous script
-        papers = content.split("="*50)[1:]  # Skip the first empty split if any
+        # Split the content into sections based on a regular expression pattern that captures a specific separator.
+        papers = re.split(r'\n\n\s*\n', content)[1:]  # Capture multiple blank lines followed by a newline
         
         paper_contents = []
         
@@ -57,8 +69,7 @@ def extract_text_from_file(file_path):
 def extract_paper_title(paper_content):
     """Extracts the paper title from the content using regular expressions."""
     
-    import re
-    match = re.search(r'Title:\s*(.*)', paper_content, re.IGNORECASE)
+    match = re.search(r'^Title:\s*(.*)', paper_content, re.IGNORECASE | re.MULTILINE)
     
     if match:
         # Extract everything after "Title:" and strip whitespace
@@ -79,33 +90,27 @@ def save_to_pdf(summary, paper_title, output_dir="summaries"):
     pdf_filename = f"{output_dir}/{sanitized_title}.pdf"
     
     # Create PDF
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, getSampleStyleSheet
+    
     doc = SimpleDocTemplate(pdf_filename, pagesize=letter)
     styles = getSampleStyleSheet()
     story = []
     
     # Add title to PDF
     story.append(Paragraph(f"Summary of: {paper_title}", styles['Title']))
-    story.append(Paragraph("<br/>", styles['Normal']))  # Spacer
     
-    # Split summary into lines and add as paragraphs
-    for line in summary.splitlines():
-        if line.strip():
-            story.append(Paragraph(line, styles['BodyText']))
-            
-    # Build the PDF
-    try:
-        doc.build(story)
-        print(f"Saved summary to {pdf_filename}")
-    except Exception as e:
-        print(f"Error saving PDF {pdf_filename}: {e}")
+    # Add the summary in bullet points if it was generated that way.
+    if isinstance(summary, str) and "\n" in summary:
+        for point in summary.split("\n"):
+            story.append(Paragraph("* " + point, styles['BodyText']))
+    else:
+        story.append(Paragraph(summary, styles['BodyText']))
+    
+    doc.build(story)
 
 # Example usage
-if __name__ == "__main__":
-    paper_path = "C:\\path\\to\\paper.txt"
-    papers_contents = extract_text_from_file(paper_path)
-    
-    for i, content in enumerate(papers_contents):
-        summary = summarize_text(content)
-        title = extract_paper_title(content)
-        
-        save_to_pdf(summary, title, output_dir="summaries")
+file_path = 'path/to/your/file.txt'
+summary_text = summarize_text(extract_text_from_file(file_path)[0])
+save_to_pdf(summary_text, extract_paper_title(extract_text_from_file(file_path)[0]))
+```
+Note that the `reportlab` library is used for generating PDFs. Ensure it's installed (`pip install reportlab`) and importable in your environment before running this code.

@@ -1,6 +1,3 @@
-**
-
-```python
 import arxiv
 import requests
 import fitz  # PyMuPDF for PDF text extraction
@@ -116,4 +113,3 @@ if __name__ == "__main__":
     start_index = random.randint(0, 20)  # Skip 0–20 papers randomly
     print(f"Starting at index: {start_index}")
     fetch_paper(query="Artificial Intelligence", max_results=3, start_index=start_index)
-```

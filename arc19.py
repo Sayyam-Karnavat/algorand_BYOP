@@ -1,4 +1,4 @@
-
+```python
 import hashlib
 import json
 import os
@@ -13,22 +13,18 @@ import multihash
 from dotenv import load_dotenv
 import logging
 
-# Set up logger
-logging.basicConfig(level=logging.INFO)
-
-load_dotenv()
+def load_env_vars():
+    """Loads environment variables for API keys and tokens."""
+    load_dotenv()
 
 class ARC19:
     def __init__(self):
         self.algod_address = "http://localhost:4001"
         self.indexer_address = "http://localhost:8980"
-        self.algod_token = "a" * 64
-        self.algod_client = AlgodClient(algod_token=self.algod_token, algod_address=self.algod_address)
-        self.algod_indexer = IndexerClient(indexer_token=self.algod_token, indexer_address=self.indexer_address)
 
         # User account
         try:
-            self.user_account = algokit_utils.get_localnet_default_account(client=self.algod_client)
+            self.user_account = algokit_utils.get_localnet_default_account(client=None)
             self.private_key = self.user_account.private_key
             self.user_address = self.user_account.address
         except Exception as e:
@@ -36,8 +32,18 @@ class ARC19:
             raise
 
         # Pinata
-        self.pinata_key = os.environ['IPFS_API_KEY']
-        self.pinata_secret_key = os.environ['IPFS_SECRET_KEY']
+        self.pinata_api_key = os.environ['IPFS_API_KEY']
+        self.pinata_secret_api_key = os.environ['IPFS_SECRET_KEY']
+
+        # Algod client
+        try:
+            self.algod_token = os.environ.get('ALGOD_TOKEN', '')
+            self.algod_client = AlgodClient(algod_token=self.algod_token, algod_address=self.algod_address)
+            self.algod_indexer = IndexerClient(indexer_token=self.algod_token, indexer_address=self.indexer_address)
+
+        except Exception as e:
+            logging.error(f"Failed to initialize Algod client: {str(e)}")
+            raise
 
         # Suggested params
         try:
@@ -56,15 +62,15 @@ class ARC19:
             logging.error(f"File does not exist at {file_path}")
             return None
 
-        url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-        headers = {
-            "pinata_api_key": self.pinata_key,
-            "pinata_secret_api_key": self.pinata_secret_key,
-        }
-        filename = os.path.basename(file_path)
-
         try:
             with open(file_path, 'rb') as file:
+                url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+                headers = {
+                    "pinata_api_key": self.pinata_api_key,
+                    "pinata_secret_api_key": self.pinata_secret_api_key,
+                }
+                filename = os.path.basename(file_path)
+
                 files = {"file": (filename, file)}
                 response = requests.post(url=url, files=files, headers=headers)
                 if response.status_code == 200:
@@ -100,15 +106,19 @@ class ARC19:
                 spamt=token_id,
                 note=""
             ).sign(self.private_key)
-            txid = self.algod_client.send_transaction(usigned_txn)
-            transaction.wait_for_confirmation(algod_client=self.algod_client, txid=txid)
-
-            logging.info(f"Token creation successful. Transaction ID: {txid}")
+            response = self.algod_client.send_transaction(usigned_txn)
+            if response.get('txId'):
+                logging.error(f"Transaction successful: {response['txId']}")
+            else:
+                logging.error(f"Transaction failed: {response['tx']}
         except Exception as e:
-            logging.error(f"Failed to create token: {str(e)}")
+            logging.error(f"Error creating token: {str(e)}")
 
-        return txid
+    def load_env_vars(self):
+        """Loads environment variables for API keys and tokens."""
+        load_dotenv()
 
-# Example usage
-arc19 = ARC19()
-arc19.create_token()
+if __name__ == "__main__":
+    # Call load_env_vars() here or wherever it's necessary
+    load_env_vars()
+```

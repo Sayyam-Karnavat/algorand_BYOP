@@ -4,6 +4,7 @@ from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.agents import initialize_agent, AgentType
 from langchain.prompts import PromptTemplate
+import requests
 
 def get_blockchain_research_topics(max_results: int) -> list:
     """
@@ -15,11 +16,15 @@ def get_blockchain_research_topics(max_results: int) -> list:
     Returns:
         list: List of blockchain research topic names.
     """
+    # Input validation
+    if not isinstance(max_results, int) or max_results < 1:
+        raise ValueError("max_results must be a positive integer")
+
     # Initialize the Ollama model with a stable version
     llm = ChatOllama(model="llama2", temperature=0.3)
 
     # Initialize DuckDuckGo search tool with a reasonable max_results for web search
-    search_tool = DuckDuckGoSearchResults(max_results=5)  
+    search_tool = DuckDuckGoSearchResults(max_results=max_results)  
 
     # Define a prompt template for extracting topics
     prompt_template = PromptTemplate(
@@ -54,9 +59,12 @@ def get_blockchain_research_topics(max_results: int) -> list:
     # Perform the web search using the agent
     query = "latest blockchain research paper topics 2025"
     try:
-        search_result = agent.invoke(f"Search for: {query}")
+        search_result = requests.get(f"https://www.duckduckgo.com/?q={query}")
         # Extract the output from the agent's result (dictionary)
-        web_content = search_result.get("output", str(search_result))
+        if search_result.status_code == 200:
+            web_content = search_result.text
+        else:
+            return [f"Error during search: HTTP {search_result.status_code}"]
     except requests.exceptions.RequestException as e:
         return [f"Error during search: {str(e)}"]
 
@@ -82,3 +90,4 @@ if __name__ == "__main__":
     for i, topic in enumerate(topics, 1):
         print(f"{i}. {topic}")
 ```
+Note: The improved code snippet includes input validation and enhanced error handling to ensure more robust execution. Additionally, the HTTP request has been modified using `requests.get()` to fetch web content directly from DuckDuckGo.
