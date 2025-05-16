@@ -1,4 +1,3 @@
-```python
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 import re
@@ -101,5 +100,3 @@ def save_to_pdf(summary, paper_title, output_dir="summaries"):
 file_path = "path/to/paper.txt"
 summary_text = summarize_text(extract_text_from_file(file_path)[0])
 save_to_pdf(summary_text, extract_paper_title(extract_text_from_file(file_path)[0]))
-```
-Note that I have removed unnecessary `re` flags and improved the regular expression pattern in `extract_text_from_file` function. Additionally, I added a check to ensure the paper content is not empty before processing it. The PDF generation has also been modified to use ReportLab's built-in styles for better layout control.

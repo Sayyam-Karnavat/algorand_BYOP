@@ -26,10 +26,10 @@ def fetch_paper(save_file, query="Artificial Intelligence", max_results=3, start
         # Initialize the arXiv client
         client = arxiv.Client()
 
-        # Create a search object with a larger pool to ensure enough unique papers
+        # Create a search object with pagination
         query_params = {
             "query": query,
-            "max_results": max_results + start_index + 10,  
+            "max_results": max_results + 10,  
             "sort_by": arxiv.SortCriterion.SubmittedDate
         }
 
@@ -40,13 +40,9 @@ def fetch_paper(save_file, query="Artificial Intelligence", max_results=3, start
             if not new_results:
                 break
             results.extend(new_results)
-            query_params["start"] += len(new_results)
 
-        # Filter out previously fetched papers and apply pagination
-        unique_results = [
-            paper for paper in results[start_index:]
-            if paper.pdf_url not in fetched_papers
-        ]
+        # Filter out previously fetched papers
+        unique_results = [paper for paper in results[start_index:] if paper.pdf_url not in fetched_papers]
 
         if not unique_results:
             raise ValueError(f"No new papers found after skipping {start_index} results and excluding duplicates.")
@@ -72,37 +68,43 @@ def fetch_paper(save_file, query="Artificial Intelligence", max_results=3, start
                     # Write the full text and metadata for this paper
                     output_file.write(f"\n{'='*50}\n")
                     output_file.write(f"Paper {index}\n")
-                    output_file.write(f"Title: {paper.title}\n")
-                    output_file.write(f"Abstract: {paper.summary}\n")
+                    output_file.write(f"Title: {paper.title or ''}\n")  # Add check for empty title
+                    output_file.write(f"Abstract: {paper.summary or ''}\n")  # Add check for empty abstract
                     output_file.write(f"PDF URL: {pdf_url}\n")
                     submission_date = paper.published
                     if submission_date:
                         output_file.write(f"Submission Date: {submission_date}\n")
                     else:
-                        output_file.write("Submission Date: Not available\n")
+                        output_file.write("Submission Date: Not Available\n")  # Add default message
 
-                    # Close the PDF file to free up system resources
-                    os.remove(pdf_file_path)
+                    with open(pdf_file_path, 'r') as f:
+                        paper_text = f.read()
+                    
+                    output_file.write(f"Text: {paper_text or ''}\n")  # Write text if available
+                    
                 except Exception as e:
-                    print(f"Error processing paper at index {index}: {e}")
-
-        # Save fetched papers to history file
-        for paper in selected_results:
-            save_fetched_paper(paper.pdf_url)
-
+                    print(f"Error processing paper {index}: {str(e)}")
+                    
     except Exception as e:
-        print(f"Error fetching papers: {e}")
+        print(f"Error fetching papers: {str(e)}")
 
-def extract_text_from_pdf(pdf_file_path):
-    """Extract text from a PDF using PyMuPDF."""
-    with fitz.open(pdf_file_path) as doc:
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        return text
+def extract_text_from_pdf(file_path):
+    try:
+        with fitz.open(file_path) as doc:
+            text = ''
+            for page in doc:
+                text += page.get_text()
+            return text
+    except Exception as e:
+        print(f"Error extracting text from PDF: {str(e)}")
+        
+def main():
+    save_file = 'output.txt'
+    query = "research papers"
+    max_results = 10
+    start_index = 0
+    
+    fetch_paper(save_file, query, max_results, start_index)
 
 if __name__ == "__main__":
-    random.seed(time.time())  # Seed with current time for varied results
-    start_index = random.randint(0, 20)  # Skip 0–20 papers randomly
-    print(f"Starting at index: {start_index}")
-    fetch_paper(query="Artificial Intelligence", max_results=3, start_index=start_index)
+    main()

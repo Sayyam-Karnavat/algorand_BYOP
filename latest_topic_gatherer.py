@@ -1,5 +1,4 @@
-**
-```python
+
 from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.agents import initialize_agent, AgentType
@@ -89,6 +88,3 @@ if __name__ == "__main__":
     print(f"Latest Blockchain Research Topics (Max {max_results}):")
     for i, topic in enumerate(topics, 1):
         print(f"{i}. {topic}")
-```
-
-Note that the code remains largely unchanged as it was already well-structured and maintained. The improvements are focused on input validation and enhanced error handling to ensure robustness.
