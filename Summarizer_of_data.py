@@ -1,9 +1,7 @@
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
 import re
+import os
 
 def summarize_text(text):
     """Summarizes extracted text into bullet points."""
@@ -17,7 +15,7 @@ def summarize_text(text):
     )
     
     # Initialize the LLaMA model
-    llm = OllamaLLM(model="llama3.1:latest")
+    llm = OllamaLLM(model="llama2:latest")
     chain = prompt_template | llm
     
     try:
@@ -30,21 +28,23 @@ def summarize_text(text):
 
 def extract_text_from_file(file_path):
     """Extracts text from the saved paper content file and separates it by paper."""
+    
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
         
         # Split the content by the separator used in the previous script
         papers = content.split("="*50)[1:]  # Skip the first empty split if any
+        
         paper_contents = []
         
         for paper in papers:
             paper = paper.strip()
             if paper:  # Only process non-empty sections
                 paper_contents.append(paper)
-        
+                
         return paper_contents  # List of individual paper contents
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(f"Error: File '{file_path}' not found.")
         return []
     except UnicodeDecodeError as e:
@@ -55,21 +55,25 @@ def extract_text_from_file(file_path):
         return []
 
 def extract_paper_title(paper_content):
-    """Extracts the paper title from the content using the 'Title:' pattern."""
-    lines = paper_content.splitlines()
-    for line in lines:
-        line = line.strip()
-        if line.startswith("Title:"):
-            # Extract everything after "Title:" and strip whitespace
-            return line.replace("Title:", "").strip()
-    return "Untitled_Paper"  # Default if no title found
+    """Extracts the paper title from the content using regular expressions."""
+    
+    import re
+    match = re.search(r'Title:\s*(.*)', paper_content, re.IGNORECASE)
+    
+    if match:
+        # Extract everything after "Title:" and strip whitespace
+        return match.group(1).strip()
+    else:
+        return "Untitled_Paper"  # Default if no title found
 
 def save_to_pdf(summary, paper_title, output_dir="summaries"):
     """Saves the summary to a PDF file with the paper title as the filename."""
+    
     import os
+    
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
+        
     # Sanitize the paper title to make it a valid filename
     sanitized_title = re.sub(r'[<>:"/\\|?*]', '', paper_title)
     pdf_filename = f"{output_dir}/{sanitized_title}.pdf"
@@ -87,10 +91,21 @@ def save_to_pdf(summary, paper_title, output_dir="summaries"):
     for line in summary.splitlines():
         if line.strip():
             story.append(Paragraph(line, styles['BodyText']))
-    
+            
     # Build the PDF
     try:
         doc.build(story)
         print(f"Saved summary to {pdf_filename}")
     except Exception as e:
         print(f"Error saving PDF {pdf_filename}: {e}")
+
+# Example usage
+if __name__ == "__main__":
+    paper_path = "C:\\path\\to\\paper.txt"
+    papers_contents = extract_text_from_file(paper_path)
+    
+    for i, content in enumerate(papers_contents):
+        summary = summarize_text(content)
+        title = extract_paper_title(content)
+        
+        save_to_pdf(summary, title, output_dir="summaries")

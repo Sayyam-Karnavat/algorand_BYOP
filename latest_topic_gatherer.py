@@ -1,3 +1,5 @@
+**
+```python
 from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.agents import initialize_agent, AgentType
@@ -13,11 +15,11 @@ def get_blockchain_research_topics(max_results: int) -> list:
     Returns:
         list: List of blockchain research topic names.
     """
-    # Initialize the Ollama model
-    llm = ChatOllama(model="llama3", temperature=0.3)
+    # Initialize the Ollama model with a stable version
+    llm = ChatOllama(model="llama2", temperature=0.3)
 
     # Initialize DuckDuckGo search tool with a reasonable max_results for web search
-    search_tool = DuckDuckGoSearchResults(max_results=5)  # Limiting to 5 web results for efficiency
+    search_tool = DuckDuckGoSearchResults(max_results=5)  
 
     # Define a prompt template for extracting topics
     prompt_template = PromptTemplate(
@@ -39,12 +41,15 @@ def get_blockchain_research_topics(max_results: int) -> list:
     topic_chain = prompt_template | llm
 
     # Initialize the agent with the search tool
-    agent = initialize_agent(
-        tools=[search_tool],
-        llm=llm,
-        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        verbose=False
-    )
+    try:
+        agent = initialize_agent(
+            tools=[search_tool],
+            llm=llm,
+            agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+            verbose=False
+        )
+    except Exception as e:
+        return [f"Error initializing agent: {str(e)}"]
 
     # Perform the web search using the agent
     query = "latest blockchain research paper topics 2025"
@@ -52,7 +57,7 @@ def get_blockchain_research_topics(max_results: int) -> list:
         search_result = agent.invoke(f"Search for: {query}")
         # Extract the output from the agent's result (dictionary)
         web_content = search_result.get("output", str(search_result))
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         return [f"Error during search: {str(e)}"]
 
     # Extract topics using the topic chain
@@ -76,3 +81,4 @@ if __name__ == "__main__":
     print(f"Latest Blockchain Research Topics (Max {max_results}):")
     for i, topic in enumerate(topics, 1):
         print(f"{i}. {topic}")
+```

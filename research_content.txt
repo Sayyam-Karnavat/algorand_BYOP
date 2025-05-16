@@ -1,1549 +1,630 @@
 
 ==================================================
 Paper 1
-Title: Closed-form expressions for the centroid-tilt error due to scintillation
-Abstract: In adaptive optics, the tracker and wavefront sensor commonly measure
-irradiance centroids (in their respective focal planes) to estimate the
-turbulence-degraded wavefront in the pupil plane. Several factors affect the
-accuracy of these centroid measurements, including noise, speckle, and
-scintillation. The centroid-tilt or ``C-tilt'' errors due to these factors have
-been studied by numerous researchers; however, to our knowledge, closed-form
-expressions for the C-tilt error due to scintillation have not been found.
-  In this paper, we derive such expressions, assuming spherical-wave
-illumination of the pupil, a path-invariant index of refraction structure
-constant $C_n^2$, and Kolmogorov turbulence. We compare the analytically
-predicted C-tilt values to those obtained by wave-optics simulations. The
-agreement, at large, is quite good over a wide range of conditions. As a
-result, researchers and engineers will find this analysis useful when
-quantifying the performance of centroid-based trackers and wavefront sensors,
-both of which are critical adaptive-optics components.
-PDF URL: http://arxiv.org/pdf/2505.00597v1
-Submission Date: 2025-05-01 15:30:33+00:00
+Title: Can On Body Sensing Be Spatial Adaptive?
+Abstract: Wearable sensors are typically affixed to specific locations on the human
+body, and their position remains static, only changing unintentionally due to
+motion artifacts. This static configuration introduces significant limitations.
+As a result, current systems miss the opportunity to capture dynamic
+physiological data from diverse body regions. This research investigates the
+potential of developing movable sensors that adaptively reposition themselves
+to sample different areas of interest on the body, addressing gaps in spatial
+coverage. We designed, developed, and fabricated a 3 x 3 matrix platform to
+support moving sensors from one location to another. We validated the
+feasibility through simulations on a matrix of up to 9 x 9 locations with up to
+16 concurrent sensors and real-world prototype characterization.
+PDF URL: http://arxiv.org/pdf/2505.10546v1
+Submission Date: 2025-05-15 17:55:08+00:00
 
 Full Content:
-arXiv:2505.00597v1  [physics.optics]  1 May 2025
-Closed-form expressions for the centroid-tilt error due to scintillation
-Milo W. Hyde IV∗
-Epsilon C5I, Beavercreek, OH 45431, USA
-Eric W. Mitchell
-Space and Missile Defense Command, Missile Defeat Directorate, Redstone Arsenal, Alabama, USA and
-The University of Arizona, Wyant College of Optical Sciences, Tucson, Arizona, USA
-Mark F. Spencer
-Department of Engineering Physics, Air Force Institute of Technology, Dayton, OH 45433, USA
-(Dated: May 2, 2025)
-In adaptive optics, the tracker and wavefront sensor commonly measure irradiance centroids (in
-their respective focal planes) to estimate the turbulence-degraded wavefront in the pupil plane.
-Several factors aﬀect the accuracy of these centroid measurements, including noise, speckle, and
-scintillation.
-The centroid-tilt or “C-tilt” errors due to these factors have been studied by nu-
-merous researchers; however, to our knowledge, closed-form expressions for the C-tilt error due to
-scintillation have not been found.
-In this paper, we derive such expressions, assuming spherical-wave illumination of the pupil, a
-path-invariant index of refraction structure constant C2
-n, and Kolmogorov turbulence. We compare
-the analytically predicted C-tilt values to those obtained by wave-optics simulations. The agreement,
-at large, is quite good over a wide range of conditions. As a result, researchers and engineers will
-ﬁnd this analysis useful when quantifying the performance of centroid-based trackers and wavefront
-sensors, both of which are critical adaptive-optics components.
-I.
+arXiv:2505.10546v1  [eess.SY]  15 May 2025
+Can On Body Sensing Be Spatial Adaptive?
+Shubham Rohal
+srohal@ucmerced.edu
+Univ. of California,
+Merced
+USA
+Dong Yoon Lee
+dlee267@ucmerced.edu
+Univ. of California,
+Merced
+USA
+Phuc Nguyen
+vp.nguyen@cs.umass.edu
+Univ. of Massachusetts
+Amherst
+USA
+Shijia Pan
+span24@ucmerced.edu
+Univ. of California,
+Merced
+USA
+ABSTRACT
+Wearable sensors are typically affixed to specific locations
+on the human body, and their position remains static, only
+changing unintentionally due to motion artifacts. This static
+configuration introduces significant limitations. As a result,
+current systems miss the opportunity to capture dynamic
+physiological data from diverse body regions. This research
+investigates the potential of developing movable sensors that
+adaptively reposition themselves to sample different areas of
+interest on the body, addressing gaps in spatial coverage. We
+designed, developed, and fabricated a 3 × 3 matrix platform
+to support moving sensors from one location to another. We
+validated the feasibility through simulations on a matrix of
+up to 9 × 9 locations with up to 16 concurrent sensors and
+real-world prototype characterization.
+ACM Reference Format:
+Shubham Rohal, Dong Yoon Lee, Phuc Nguyen, and Shijia Pan.
+2025. Can On Body Sensing Be Spatial Adaptive?. In Proceedings of
+ACM Conference (Conference’17). ACM, New York, NY, USA, 6 pages.
+https://doi.org/10.1145/nnnnnnn.nnnnnnn
+1
 INTRODUCTION
-It is common knowledge that as light propagates
-through atmospheric turbulence it accumulates phase er-
-rors distributed along the path [1–7].
-Adaptive-optics
-systems often employ tilt and higher-order wavefront sen-
-sors (in the form of trackers and Shack–Hartmann wave-
-front sensors) to estimate these path-integrated phase er-
-rors [8–13]. Both sensors generally operate on the same
-principle: They measure the centroid of an irradiance
-pattern in a focal plane to estimate the light’s phase func-
-tion in the pupil plane. For the tracker, the centroid mea-
-surement is global and provides an estimate of the aver-
-age phase gradient over the pupil. The Shack–Hartmann
-wavefront sensor, on the other hand, partitions the pupil
-into subapertures and therefore, provides estimates of the
-average phase gradients over the subaperture areas. In
-the absence of noise, speckle, and scintillation, both of
-these sensors measure what is known as gradient tilt or
-“G-tilt” [7, 14].
-Unfortunately, there are two problems with using G-
-tilt to estimate the path-integrated phase errors.
-For
-simplicity, we focus the discussion on the tilt sen-
-sor or tracker.
-The actual or true amount of tilt
-in the turbulence-degraded wavefront is given by the
-weights/coeﬃcients of the tip/tilt Zernike polynomials
-Z±1
+Wearables enable various on-body sensing for physical and
+physiological measurements, which are essential for various
+human-centric sensing purposes such as heartbeat monitor-
+ing [3], muscle condition monitoring [13], and brain wave
+monitoring [15] for multiple healthcare applications ranging
+from detecting cardiovascular anomalies, sensing athletic
+performance, to in-depth sleep research and neurological
+assessments, just to name a few. Since these signals are often
+weak and prone to motion artifacts or environmental noise,
+the position of sensors on the body plays a critical role in
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are not
+made or distributed for profit or commercial advantage and that copies bear
+this notice and the full citation on the first page. Copyrights for components
+of this work owned by others than ACM must be honored. Abstracting with
+credit is permitted. To copy otherwise, or republish, to post on servers or to
+redistribute to lists, requires prior specific permission and/or a fee. Request
+permissions from permissions@acm.org.
+Conference’17, July 2017, Washington, DC, USA
+© 2025 Association for Computing Machinery.
+ACM ISBN 978-x-xxxx-xxxx-x/YY/MM...$15.00
+https://doi.org/10.1145/nnnnnnn.nnnnnnn
+sensor
+Single sensor 
+single location 
+adjustment
+Single sensor 
+multiple locations
+Multiple sensors 
+multiple locations
+Figure 1: Wearable application examples with the
+needs of spatial adaptation.
+preserving signal quality [3], which directly influences the
+system’s accuracy. In addition, human physical and physi-
+ological differences often result in different optimal sensor
+placements for different people. A one-size-fits-all approach
+to sensor placement will not be efficient.
+Prior work for these wearable systems mostly relies on
+manual adjustment from expert [3] or the sensor matrix de-
+ployment to cover a larger area [15] to ensure the quality of
+sensing data acquired. These methods suffer from scalabil-
+ity issues because manual intervention requires expensive
+skilled labor, and sensor matrix methods require multiple
+sensors. Figure 1 depicts our envisioned solution for these
+systems, where the wearable sensors are moveable to achieve
+efficient and effective information acquisition tasks.
+Existing sensing approaches for sensor mobility can be
+clustered into three categories based on their mobility-medium
+relationship, including in-medium (e.g., aerial drones flying
+in the air) [2, 10, 14], on-medium (e.g., ground vehicle mov-
+ing on the floor) [1, 16], and along-medium movements (e.g.,
+rail camera running on the track) [7, 11], as shown in Fig-
+ure 1(d). However, these approaches do not directly apply to
+wearables due to the following reasons. In-medium devices,
+Conference’17, July 2017, Washington, DC, USA
+Shubham Rohal, Dong Yoon Lee, Phuc Nguyen, and Shijia Pan
+Figure 2: Existing platforms for movable sensors have
+limitations and are not directly applicable to wearable
+systems.
+such as drones, require more power to move themselves
+around. On-medium devices, such as ground vehicles, are
+constrained by gravity and cannot adapt to wearables with
+varying body surface orientations. Along-medium devices,
+such as rail cameras, have their movement constrained by
+the rail and do not support flexible moving directions.
+To fill the gap, this research explores a solution suitable
+for wearable systems and enabling spatial adaptation. In this
+paper, we propose a surface structure-assistive solution that
+enables sensors to move on the surface with varying orienta-
+tions. We design and implement a surface structure-assistive
+prototype with gear structures and a variant of a pathfinding
+algorithm that is adapted to the gear structural constraints.
+We conduct both simulation and real-world experiments to
+validate the feasibility of the design.
+We make the following technical contributions in this pa-
+per: (1) we developed a spatially adaptive platform enabling
+sensors to be mobile on the human body; (2) we designed a
+gear-based surface structure to assist in implementing this
+mobility; (3) we validated the concept through simulations
+on a matrix of up to 9 × 9 locations with up to 16 concurrent
+sensors; and (4) we confirm the feasibility of the technique
+with a real-world prototype and report the results.
+2
+PROPOSED APPROACH
+To explore the feasibility of spatial adaptation for wearables,
+we present a framework that moves sensors along surfaces
+with surface-assistive structures. In this section, we first
+introduce the surface assistive design choices (Section 2.1).
+Then, we present GearUp , a scalable gear-based assistive
+surface design to allow sensors to be moved from one to the
+desired location (Section 2.2). Finally, we depict a variant
+of path planning algorithms accommodating the assistive
+structure’s constraints on the sensor placement and moving
+path (Section 2.3).
+2.1
+Spatial Adaptive Wearable via Surface
+Structure-Assistive Sensor Movement
+The aforementioned mobility platforms in Figure 2, which
+perform in/on/along medium movement, are not directly
+applicable in on-body sensor scenarios. For instance, in-
+medium platforms like drones offer a high degree of free-
+dom but require significant energy[2], resulting in short
+battery life, which is impractical for wearable applications.
+On-medium platforms, such as autonomous ground robots,
+are restricted by gravity from moving in limited orienta-
+tions. Unlike in-medium and on-medium solutions, where
+the medium is not part of the system, along-medium plat-
+forms, like rail cameras, can navigate different rail orienta-
+tions but are confined to 1-D predefined paths, limiting the
+freedom of movement. Considering the wearable sensors
+will be worn, i.e., in contact with the body, we envision their
+movement to be along the surface of the body. To allow flexi-
+ble spatial adaptation on the body surface, we consider com-
+bining on-medium and along-medium designs. Since
+the constraint for the along-medium design is the degree of
+freedom in movement, we propose moving the medium
+and sensor together with a structure-assistive design. To
+achieve that, we must consider two aspects of the moveable
+sensor design: (1) the mechanism to move and mount on the
+surface (Section 2.2) and (2) the moving path (Section 2.3).
+2.2
+GearUp : Surface Structure-Assistive
+Design with Gears
+We consider gears the assistive structure for two reasons: (1)
+efficient power and motion transmission and (2) fine-grained
+directional control. Figure 3 depicts GearUp , a gear-based
+platform for surface sensor spatial adaptation.
+2.2.1
+Mounting Mechanism. Since gear allows fine-grained
+directional control, we design the sensor mounting mecha-
+nism based on this. Figure 3 (a) shows the design for individ-
+ual gear structures with 𝐶channels evenly distributed across
+the surface. Each channel has a rail structure marked in yel-
+low lines, where sensors will move along it, as shown on
+the channel 𝑖. Each gear can hold up to 𝐶number of sensors
+simultaneously.
+2.2.2
+Along Rail Sensor Transfer Mechanism. Sensors move
+between two gears via the rail structure on gears. One sensor
+is mounted on one channel of one gear at a time. When it
+needs to be moved from one gear to the next, this mounting
+condition changes. As shown in Figure 3 (b), when two chan-
+nels on the gears are connected/aligned, the sensor can move
+from one gear to another. Figure 4 shows one prototype of
+this mechanism implemented with a servo motor connected
+to a small gear pinion in the rack and pinion mechanism
+Can On Body Sensing Be Spatial Adaptive?
+Conference’17, July 2017, Washington, DC, USA
+2r*N
+2r*M
 1
-[7, 15–17]. Although G-tilt clearly includes Zernike
-tilt or “Z-tilt,” it also includes contributions from all
-other oﬀ-axis aberrations (predominately coma) that pro-
-duce shifted or sheered point spread functions [7, 18].
-∗mhyde@epsilonsystems.com
-This Z-tilt, G-tilt error, known as centroid anisopla-
-natism, has been studied and quantiﬁed by many re-
-searchers, including Sasiela [7], Tyler [14], and Yura and
-Tavis [19].
-The second issue with using G-tilt to estimate the
-path-integrated phase errors (tilt, in particular) concerns
-the measurement of the irradiance centroid. Multiple fac-
-tors aﬀect the accuracy of this measurement, including
-noise, speckle, and atmospheric amplitude ﬂuctuations
-(better known as scintillation). When considering these
-real-world eﬀects, it is common to distinguish this tilt,
-called centroid tilt or “C-tilt,” from pure G-tilt.
-The error due to C-tilt has also been studied by nu-
-merous researchers: Tyler and Fried quantiﬁed the C-
-tilt error due to sensor noise [20]; Burrell et al. devel-
-oped scaling laws for the C-tilt error considering target-
-induced speckle [21]; and lastly, Tavis and Yura [22],
-Holmes [23], Shaw and Tomlinson [24], and Mitchell et
-al. [25, 26] studied the eﬀects of amplitude variation on
-C-tilt. These latter studies were either numerical in na-
-ture (i.e., used quadrature to evaluate integral expres-
-sions or wave-optics simulations to quantify C-tilt) or
-did not consider turbulence-induced scintillation as a po-
-tential source of amplitude variation.
-In this paper, we derive closed-form expressions that
-quantify the C-tilt error of a scintillated spherical wave
-(see Section II). To validate these expressions, we employ
-wave-optics simulations, which we describe in Section III.
-We then compare the simulation results to predictions
-from our analytical expressions in Section IV. The agree-
-ment, at large, is excellent over a broad range of condi-
-tions. Lastly, we conclude with a brief summary of our
-work.
-2
-II.
-THEORY
-In this section, we start with Tatarskii’s deﬁnition of
-the C-tilt angle [1, 27] and utilize Mellin transform tech-
-niques [7, 28] to obtain three closed-form expressions for
-the C-tilt variance, as well as the G-tilt, C-tilt error.
-These expressions, in general, are functions of the Fres-
-nel number NF [29, 30]. The ﬁrst, which is valid for all
-NF , is in the form of a Meijer G-function [7, 28, 31, 32],
-while the second and third are simple, physical relations
-accurate for NF ≪1 and NF ≫1, respectively.
-A.
-Centroid-tilt variance
-The angular centroid location in the focal plane is given
-by
-TC =
-ZZ ∞
-−∞
-(ρ/f) I (ρ) d2ρ
-ZZ ∞
-−∞
-I (ρ) d2ρ
-,
-(1)
-where ρ = ˆxx + ˆyy, f is the focal length, and I is the ir-
-radiance in the focal plane. Tatarskii showed that Eq. (1)
-is equivalent to [1, 9, 27]
-TC = 1
-k
-ZZ ∞
-−∞
-circ (ρ/D) ∇φ (ρ) I (ρ) d2ρ
-ZZ ∞
-−∞
-circ (ρ/D) I (ρ) d2ρ
-.
-(2)
-Here, ρ and I are in the pupil plane, k = 2π/λ, D is
-diameter of the circular pupil, and ∇φ is the phase gra-
-dient.
-Consider a spherical wave radiated by a point source
-located a distance z away from the pupil. The irradiance
-in the pupil plane takes the form
-I (ρ) = |U0|2
-(λz)2 exp [2χ (ρ)] ,
-(3)
-where U0 is the amplitude of the point source and χ is
-the log-amplitude ﬂuctuations due to atmospheric turbu-
-lence [4, 6]. Substituting Eq. (3) into Eq. (2) yields
-TC = 1
-k
-ZZ ∞
-−∞
-circ (ρ/D) ∇φ (ρ) exp [2χ (ρ)] d2ρ
-ZZ ∞
-−∞
-circ (ρ/D) exp [2χ (ρ)] d2ρ
-.
-(4)
-We are interested in the C-tilt variance (note that the
-mean equals zero); therefore,
-⟨TC · TC⟩= ⟨T 2
-C⟩= 1
-k2
-*
-ZZZZ ∞
-−∞
-circ (ρ1/D) circ (ρ2/D) ∇1φ (ρ1) · ∇2φ (ρ2) exp [2χ (ρ1)] exp [2χ (ρ2)] d2ρ1d2ρ2
-ZZZZ ∞
-−∞
-circ (ρ1/D) circ (ρ2/D) exp [2χ (ρ1)] exp [2χ (ρ2)] d2ρ1d2ρ2
-+
-.
-(5)
-To proceed, we make the approximation that the mean of the quotient is equal to the quotient of the means, such
-that
-⟨T 2
-C⟩≈1
-k2
-ZZZZ ∞
-−∞
-circ (ρ1/D) circ (ρ2/D) B∇φ (|ρ1 −ρ2|) exp [4Bχ (|ρ1 −ρ2|)] d2ρ1d2ρ2
-ZZZZ ∞
-−∞
-circ (ρ1/D) circ (ρ2/D) exp [4Bχ (|ρ1 −ρ2|)] d2ρ1d2ρ2
-,
-(6)
-where B∇φ and Bχ are the phase gradient and log-
-amplitude covariance functions [14, 33].
-Following
-Holmes [23], we also assume that the turbulent phase
-gradient and log amplitude are statistically independent.
-Making the change of variables ρ′ = ρ1 and ρ = ρ1 −ρ2
-and transforming to polar coordinates produces
-⟨T 2
-C⟩= 1
-k2
-2π
-A
-Z ∞
-0
-ρΛ (ρ/D) B∇φ (ρ) exp [4Bχ (ρ)] dρ
-2π
-A
-Z ∞
-0
-ρΛ (ρ/D) exp [4Bχ (ρ)] dρ
-,
-(7)
-where A = π (D/2)2 is the area of the pupil and
-Λ (x) = 2
-π
-h
-cos−1 (x) −x
-p
-1 −x2
-i
-circ
-x
-2
-
-.
-(8)
-is the optical transfer function [29, 30]. Equation (7) is
-the primary focus of this paper.
-B.
-Evaluating Eq. (7)
-To proceed further, we make the weak turbulence ap-
-proximation exp [4Bχ (ρ)] ≈1 + 4Bχ (ρ), as it is not pos-
-3
-sible to evaluate the integrals with Bχ in the arguments
-of the exponentials. We focus ﬁrst on the numerator.
-1.
-The numerator
-The weak turbulence approximation splits the numer-
-ator of Eq. (7) into the sum of two integrals:
-⟨T 2
-C⟩N ≈2π
-k2A
-Z ∞
-0
-ρΛ (ρ/D) B∇φ (ρ) dρ
-+ 2π
-k2A
-Z ∞
-0
-ρΛ (ρ/D) B∇φ (ρ) 4Bχ (ρ) dρ.
-(9)
-We recognize the ﬁrst integral as the G-tilt variance
-
-T 2
-G
-
-[7, 14, 27]. For convenience, we refer to the sec-
-ond as the G-tilt, C-tilt variance
-
-T 2
-GC
-
-.
-Starting with
-
-T 2
-G
-
-, we can evaluate the integral rather
-easily using the spherical-wave version of Tyler’s expres-
-sion for B∇φ [14], i.e.,
-B∇φ (ρ) = 5
-24
-√πΓ
-
-1/6
-2/3
-
-C2
-nk2zρ−1/3,
-(10)
-where the gamma function notation is [7]
-Γ
-
-a1, a2, · · · , am
-b1, b2, · · · , bn
-
-= Γ (a1) Γ (a2) · · · Γ (am)
-Γ (b1) Γ (b2) · · · Γ (bn) .
-(11)
-Although somewhat obvious, B∇φ in Eq. (10) assumes
-Kolmogorov turbulence and path-independent index of
-refraction structure constant C2
-n. Substituting Eq. (10)
-into
-
-T 2
-G
-
-and making the change of variables ρ = Dx
-yields
-
-T 2
-G
-
-= 5
-3
-√πΓ
-
-1/6
-2/3
-
-C2
-nzD−1/3
-Z ∞
-0
-dx
-x x5/3Λ (x) . (12)
-The integral is equivalent to the Mellin transform of Λ (x)
-evaluated at 5/3. Reference [7] gives this Mellin trans-
-form. Making the requisite substitutions reveals
-
-T 2
-G
-
-= Γ
-
-1/6, 4/3
-2/3, 17/6
-
-C2
-nzD−1/3.
-(13)
-Proceeding to the G-tilt, C-tilt variance in Eq. (9),
-we substitute in B∇φ from Eq. (10) and again make the
-change of variables ρ = Dx producing
-
-T 2
-GC
-
-= 5
-3
-√πΓ
-
-1/6
-2/3
-
-C2
-nzD−1/3
-×
-Z ∞
-0
-x2/3Λ (x) 4Bχ (Dx) dx.
-(14)
-The integral in Eq. (14) can be evaluated using the Mellin
-convolution theorem [7, 28].
-To do so, we need the
-Mellin transforms of the functions in the integrand, Λ (x)
-and 4Bχ (x)—the former we have, the latter we do not.
-Therefore, we need to derive the Mellin transform of 4Bχ
-to proceed further.
-The (weak-turbulence) spherical-wave log-amplitude
-covariance is given by [33]
-4Bχ (x) = 16π2k2
-Z z
-0
-Z ∞
-0
-κΦn (κ, ζ) J0
-ζ
-z κx
-
-× sin2
- z
-2k
-ζ
-z
-
-1 −ζ
-z
-
-κ2
-
-dκdζ.
-(15)
-For constant C2
-n and Kolmogorov turbulence, Eq. (15)
-specializes to
-4Bχ (x) = 28/3√π 5
-9Γ
-
-5/6
-2/3
-
-C2
-nk2
-Z z
-0
-Z ∞
-0
-κ−8/3
-×J0
-ζ
-z κx
-
-sin2
- z
-2k
-ζ
-z
-
-1 −ζ
-z
-
-κ2
-
-dκdζ.
-(16)
-We can use the Mellin convolution theorem to write
-the integral over κ as an equivalent contour integral, such
-that
-4Bχ (x) = −5π
-72 Γ
-
-5/6
-2/3
-
-C2
-nk2x5/3 1
-j2π
-Z
 C
-x−s
- k
-2z
-−s/2
-Γ
-
-s/2 −5/6, −s/4
-−s/2 + 11/6, s/4 + 1/2
+2
+3
+r
+M,N
+M,1 M,2
+2,N
+1,N
+1,2
+2,2
+2,1
+1,1
+Connected 
+Rails
+(a)
+(b)
+(c)
+Disconnected 
+Rails
+i
+Sensor
+Figure 3: GearUp design overview. (a) individual gear design with radius of 𝑟and channel number of 𝐶. (b) rail
+sensor transfer mechanism. (c) gear matrix of size 𝑀× 𝑁.
+[9]. When the servo motor rotates, the circular motion con-
+verts into linear lateral motion, which moves the sensor-rail
+connector along the rail.
+2.2.3
+Gear Matrix Motion Transfer. With the power and
+motion transfer ability between gears, only one gear needs
+to be connected to the actuator (motor) to rotate all the
+interconnected gears. Here, we consider a gear matrix of size
+𝑀×𝑁covering an area of approximately (2𝑟×𝑀)×(2𝑟×𝑁),
+where 𝑟is the radius of the gear, as shown in Figure 3 (c). The
+sensors connected to the gear can move in a circular path
+along the motion of the gear. When rotating, two adjacent
+gears always rotate in opposite directions. The path planning
+on the gear matrix will be introduced in Section 2.3.
+2.3
+Surface Structure-Constrained Path
+Planning
+The gear matrix design enables 2D movement transferring
+sensors between gears, but it also introduces constraints on
+sensor capacity and movements.
+2.3.1
+Gear Channel Parity. As shown in Figure 4(b), gears
+align at certain angles, allowing sensors to move simulta-
+neously along connected channels. When two channels are
+connected, only one sensor can occupy both channels at
+a time. The pattern of these connected channels at differ-
+ent gear angles is referred to as Gear Channel Parity. Thus,
+GearUp uses this parity phenomenon to coordinate multi-
+ple sensor movements with one gear rotation step without
+affecting certain sensor positions.
+2.3.2
+Sensor Capacity. In a 𝑛×𝑛gear matrix, the maximum
+number of sensors that can move to any target location is
+ 𝑛
+2
+
++ (𝑛(mod 2)). We prove it in the following proof:
+(d)
+Side View
+(c)
+Top View
+(a)
+Sensor-Rail Connector
+(b)
+Sensor-Rail 
+Connector
+Motor-Pinion 
+Connection
+Figure 4: GearUp implementation with 4 channels.
+Definition 1 (𝐺2). 𝐺2 is a set of all possible gear matrices
+with 2 sensors, 𝑠0 and 𝑠1, placed in a checkerboard pattern:
+𝐺2 =
+ 𝑠0
+𝑠1
 
-×
-Z z
-0
-ζ
-z
-5/3−s/2 
-1 −ζ
-z
-s/2
-dζds,
-(17)
-where the contour C crosses the real s axis between 5/3 < Re (s) < 19/6. The ζ integral is equal to a beta function [34],
-which can be written as the product of gamma functions, namely,
-Z z
-0
-ζ
-z
-5/3−s/2 
-1 −ζ
-z
-s/2
-dζ = zΓ
+,
 
-8/3 −s/2, 1 + s/2
-11/3
+𝑠0
+𝑠1
 
-.
-(18)
-Substituting Eq. (18) into Eq. (17) and performing some minor algebra to write the expression in the form of an
+,
+
+𝑠1
+𝑠0
+
+,
+𝑠1
+𝑠0
+
+Every element in 𝐺2 is defined to be able to swap to all other
+elements in 𝐺2 with a singular gear rotation and any number
+of concurrent sensor transfers.
+Definition 2 (checkerboard pattern). A Matrix is said
+to have a checkerboard pattern if all submatrices of a matrix
+are an element of 𝐺2
+In-Place Transfer. For any 2 × 3 submatrix 𝑔that fol-
+lows the gear matrix checkerboard pattern, it can transfer
+Conference’17, July 2017, Washington, DC, USA
+Shubham Rohal, Dong Yoon Lee, Phuc Nguyen, and Shijia Pan
+sensors 𝑔[0][0] and 𝑔[0][2]. Referencing 𝐺2 in definition
+1, it can transfer sensors 𝑔[0][0] and 𝑔[1][1], 𝑔[1][1] and
+𝑔[0][2], and𝑔[0][0] and𝑔[1][1] sequentially to complete the
+in-place transferring operation. Therefore, sensors 𝑔[0][0]
+and 𝑔[0][2] can be transferred to each other’s positions. Sim-
+ilarly, 𝑔[0][2] and 𝑔[2][2] can be transferred to each other’s
+positions. The transposed submatrix 3 × 2 can also transfer
+sensors of positions 𝑔[0][0] and 𝑔[2][0].
+□
+Proof. For any 𝑛× 𝑛, ∀𝑛∈N+, 𝑛≥2 gear matrix, let
+there be a set of sensor location states 𝐺𝑛, such that each
+element in 𝐺𝑛is a matrix containing
+ 𝑛
+2
+
++ (𝑛(mod 2))
+sensors attached to alternating gears on the matrix. It is
+required to prove that for any matrix in 𝐺𝑛, there is a valid
+swap to any other matrix in 𝐺𝑛.
+Suppose we have a set of gear matrices 𝐺𝑛with size 𝑛∈
+N+, 𝑛≥2, such that each gear matrix has a possible path
+to any other gear matrix in 𝐺𝑛. We wish to prove that the
+successor, 𝐺𝑛+1, is a set in which all elements have a possible
+path to any other element in 𝐺𝑛+1.
+Suppose we model each element in 𝐺𝑛+1 as some matrix
+where ∀𝑔𝑛+1 ∈𝐺𝑛+1, submatrices in 𝐺2 swap to other sub-
+matrices in 𝐺2 1, until ∃𝑔𝑛∈𝐺𝑛| 𝑔𝑛+1[0 : 𝑛][0 : 𝑛] = 𝑔𝑛:
+𝑔𝑛+1 =
+
+𝑠1
+𝑠2
+...
+𝑠𝑘
+𝑔𝑛
+𝑠𝑘+1
+...
+𝑠𝑚
+
+Since any 𝑔𝑛can swap to another, any submatrix of size
+𝑛× 𝑛in the larger gear matrix 𝑔𝑛+1 can swap with any other
+submatrix containing the same elements at the same position.
+For the ordered sequence of sensors 𝑠: ∀𝑠∉𝑔𝑛, any two
+neighbors can be transferred in-place with proof “In-Place
+Transfer”. Therefore, the sequence can be rearranged in any
+order with in-place swapping only. In this way, any 𝑔𝑛+1 is
+able to swap with any other 𝑔𝑛+1 in the set 𝐺𝑛+1.
+Therefore, 𝐺is a set such that 𝐺2 ∈𝐺and 𝐺contains all
+its successors. Therefore, G is a set of all 𝐺𝑛∈𝐺| 𝑛∈N+,
+𝑛≥2, where each element contains all combinations of
+sensor locations in a checkerboard pattern, such that there is
+a possible swapping sequence to any combination of sensor
+locations in a checkerboard pattern in the same gear matrix
+size.
+□
+2.3.3
+Path Planning with Parity Constraints. GearUp uses
+a traditional path planning algorithm ranking each path by
+its Manhattan distance between the current and target sen-
+sor locations. In order for this algorithm to work with the
+Gear Channel Parity, we incorporate collision filtering to
+remove any path that moves two sensors to the same con-
+nected channel. The unique Gear Channel Parity property
+also allows multiple sensors to move concurrently after each
+(a)
+Initial Position
+(c)
+90° cw Rotation
+(b)
+90° cw Rotation
+(d)
+90° cw Rotation
+S
+E
+S
+E
+S
+E
+S
+E
+Figure 5: Example path planning (from 𝑆to 𝐸) and
+sensor/gear movement.
+gear rotation in one simulation step, so we designed the path
+planning to consider all possible combinations of parallel
+sensor movement to decrease path steps toward the target
+location. For each unique gear rotation, a certain pattern of
+pair channels is connected, so we designed a dynamic mask-
+ing technique that records which connections are available
+for which gear angles. This masked connection matrix is
+matched with sensors according to their location to update
+all possible paths.
+3
+PRELIMINARY EVALUATION
+In this section, we demonstrate the feasibility and scalability
+of the proposed approach through a real-world prototype
+implementation and characterization. The correctness of the
+constrained path planning concept is validated via scale and
+population analysis with simulation.
+3.1
+Prototype Characterization
+The prototype’s movements per step consist of two actions:
+rotating the gear and transferring the sensor between adja-
+cent gears. We characterize the time for these two actions
+by repeating the action 10 times. The rotating gear for 90°
+Can On Body Sensing Be Spatial Adaptive?
+Conference’17, July 2017, Washington, DC, USA
+2
 4
-inverse Mellin transform [7, 28] yields
-x−5/34Bχ (x) =
-1
-j2π
-Z
-C
-ds
-(
-−5π
-72 Γ
-
-5/6
-2/3, 11/3
-
-C2
-nk2z
- k
-2z
-−s/2
-Γ
-
-s/2 −5/6, −s/4, −s/2 + 8/3, s/2 + 1
-−s/2 + 11/6, s/4 + 1/2
-)
-x−s.
-(19)
-The quantity in braces is the Mellin transform of
-x−5/34Bχ (x).
-We can now evaluate
-
-T 2
-GC
-
-in Eq. (14). First, we mul-
-tiply and divide 4Bχ (Dx) in the integrand by (Dx)−5/3
-producing
-
-T 2
-GC
-
-= 5
-3
-√πΓ
-
-1/6
-2/3
-
-C2
-nzD4/3
-×
-Z ∞
-0
-x7/3Λ (x)
-h
-(Dx)−5/3 4Bχ (Dx)
-i
-dx.
-(20)
-Then, applying the Mellin convolution theorem and the
-Mellin transforms for Λ (x) and x−5/34Bχ (x), we obtain
-
-T 2
-GC
-
-= −2−11/2 25
-27Γ
-
-1/6, 5/6
-2/3, 2/3, 11/3
- 
-C2
-nkzD2/32
-× 1
-j2π
-Z
-C
- N 2
-F
-−s Γ
-−5/12 + s, 1/12 + s, 1 + s
-× Γ
-
-−s, 5/6 −s, 13/12 −s, 4/3 −s, 19/12 −s
-11/12 −s, 17/12 −s, 11/6 −s, 7/3 −s
-
-ds,
-(21)
-where NF = π (D/2)2 / (λz) is the Fresnel number [29,
-30] and C crosses the real s axis between 5/12 < Re (s) <
-19/24.
-For relative ease of numerical computation, we can
-write Eq. (21) in the form of a Meijer G-function [7, 28,
-32, 34]. Numerical routines to evaluate such functions
-are available in MATLAB, Mathematica, and Python.
-Note that there are several diﬀerent deﬁnitions of a Mei-
-jer G-function. Here, we use the one given in Ref. [32],
-which is consistent with the Meijer G-function routines
-in Mathematica and Python, namely,
-Gm,n
-p,q
-
-z
-
-a1, a2, · · · , ap
-b1, b2, · · · , bq
-
-=
-1
-j2π
-Z
-γ
-Qn
-j=1 Γ (1 −aj −s)
-Qp
-j=n+1 Γ (aj + s)
-×
-Qm
-j=1 Γ (bj + s)
-Qq
-j=m+1 Γ (1 −bj −s)z−sds.
-(22)
-The integration contour γ in Eq. (22) passes between
-the poles arising from the Γ (bj + s) and Γ (1 −aj −s)
-gamma functions. In our particular case, γ encloses the
-poles at s = −m + 5/12, −m −1/12, and −m −1 for
-m = 0, 1, · · · , but excludes the pole at s = 0. In Eq. (21),
-the contour C includes this pole. Therefore, to write the
-integral in Eq. (21) in terms of a Meijer G-function, we
-need to add the s = 0 pole contribution to Gm,n
-p,q . Putting
-Eq. (21) into the form of Eq. (22) and applying Cauchy’s
-integral formula [35, 36] reveals
-
-T 2
-GC
-
-= −2−5/6 55
-9π Γ
-
-11/12
-−5/12, 11/6, 4/3
-
-σ2
-χ
-
-T 2
-G
-
-N 5/6
-F
-9
-5
-√
-2πΓ
-
-−5/6, 13/6
-11/6
-
-−G3,5
-5,7
-
-N 2
-F
-
-1/6, −1/12, −7/12, 1, −1/3
-−5/12, 1/12, 1, −5/6, −4/3, 1/12, −5/12
-
-,
-(23)
-where σ2
-χ
-is the spherical-wave log-amplitude vari-
-ance [33].
-Recall that
-
-T 2
-C
-
-N is the sum of the G-tilt
-variance
-
-T 2
-G
-
-in Eq. (13) with
-
-T 2
-GC
-
-in Eq. (23).
-It is important to note that
-
-T 2
-C
-
-N is equivalent to the
-C-tilt variance integral expression derived by Holmes [23].
-He assumes that the denominator of Eq. (7) is equal to
-one. This assumption is accurate in weak turbulence and
-provides a very good approximation for the C-tilt vari-
-ance. Here, we include the denominator because we are
-also interested in the G-tilt, C-tilt error, where its impact
-becomes important.
-2.
-The denominator
-We now proceed to the denominator of Eq. (7), the
-evaluation of which follows the same steps as above. We
-make the weak turbulence approximation exp [4Bχ (ρ)] ≈
-1 + 4Bχ (ρ), which splits the denominator into two inte-
-grals:
-
-T 2
-C
-
-D ≈2π
-A
-Z ∞
-0
-ρΛ (ρ/D) dρ
-+ 2π
-A
-Z ∞
-0
-ρΛ (ρ/D) 4Bχ (ρ) dρ.
-(24)
-The ﬁrst integral is unity, and the second is the aperture-
-averaged scintillation σ2
-χA [4, 6, 7].
-5
-Focusing on σ2
-χA, we make the substitution ρ = Dx,
-multiply and divide 4Bχ (Dx) by (Dx)−5/3, and apply
-the Mellin convolution theorem yielding (after simpliﬁ-
-cation)
-σ2
-χA = −2−5/2
-√π
-5
-9Γ
-
-5/6
-2/3, 11/3
-
-C2
-nk2zD5/3
-× 1
-j2π
-Z
-C
- N 2
-F
-−s Γ
-−5/12 + s, 1/12 + s, 1 + s
-× Γ
-
-−s, 7/6 −s, 4/3 −s, 5/3 −s, 11/6 −s
-17/12 −s, 23/12 −s, 23/12 −s, 29/12 −s
-
-ds,
-(25)
-where C crosses the real s axis between 5/12 < Re (s) <
-19/24. Like Eq. (23) above, to express Eq. (25) in the
-form of a Meijer G-function, we must add the s = 0
-residue to obtain the correct result. Applying Cauchy’s
-integral formula produces
-σ2
-χA = −219/6
-π3/2 Γ
-
-11/12
-11/6, 11/6, −5/12
-
-σ2
-χN 5/6
-F
-
-27/2√πΓ
-
-−5/6, 7/3, 8/3
-17/6, 23/6
-
-−G3,5
-5,7
-
-N 2
-F
-
-1, −1/6, −1/3, −2/3, −5/6
-−5/12, 1/12, 1, −5/12, −11/12, −11/12, −17/12
-
-.
-(26)
-Finally, the C-tilt variance is
-
-T 2
-C
-
-=
-
-T 2
-C
-
-N
-⟨T 2
-C⟩D
-=
-
-T 2
-G
-
-+
-
-T 2
-GC
-
-1 + σ2
-χA
-,
-(27)
-where the G-tilt variance ⟨T 2
-G⟩, G-tilt, C-tilt variance
-⟨T 2
-GC⟩, and the aperture-averaged scintillation σ2
-χA are
-in Eqs. (13), (23), and (26), respectively.
-C.
-Asymptotic expressions for the C-tilt variance
-Although we have obtained a closed-form answer for
-the C-tilt variance, the result provides little insight into
-how
-
-T 2
-C
-
-behaves versus NF .
-Inspection of the inte-
-grands in Eqs. (21) and (25) reveals that the integrals
-converge for all values of NF when the contours are closed
-to the left. In both cases, the contours circumscribe the
-poles at s = 0, −m + 5/12, −m −1/12, and −m −1 for
-m = 0, 1, · · · .
-For NF ≪1 (i.e., the far-zone) the numerator of
-
-T 2
-C
-
-is well approximated by summing the pole residues at s =
-0, 5/12, and −1/12. Performing the requisite analysis
-yields
-
-T 2
-C
-
-N ≈
-
-T 2
-G
- 
-1 + 4σ2
-χ
-+ 25/3
-√π
-99
-55Γ
-
-13/6, 11/12, 1/6
-5/6, 11/6, 4/3, −5/12
-
-σ2
-χN 5/6
-F
-−27/6
-π
-3
-17Γ
-
-1/6, 11/3, 1/12, 11/12, 11/12
-11/6, −5/12, 4/3
-
-σ2
-χNF
-
-.
-(28)
-Likewise,
-
-T 2
-C
-
-D is well approximated by summing the
-residues of the same three poles, namely,
-
-T 2
-C
-
-D ≈1 + 4σ2
-χ
-−213/2
-π2 Γ
-
-11/12, 1/12, 4/3, 7/3
-11/6, 17/6, 23/6
-
-σ2
-χN 5/6
-F
-+ 211/6
-π
-Γ
-
-1/12, 23/12, −1/12, 11/12
-11/6, −5/12
-
-σ2
-χNF .
-(29)
-Nevertheless, dividing Eq. (28) by Eq. (29) yields a poor
-estimate for
-
-T 2
-C
-
-. Consequently, we use
-
-T 2
-C
-
-D ≈1+4σ2
-χ
-when we approximate
-
-T 2
-C
-
-for NF ≪1.
-For NF ≫1 (i.e., the near-zone) the sums over the
-pole residues are slow to converge and can result in nu-
-merical errors when evaluating the Meijer G-functions in
-Eqs. (23) and (26). We, therefore, seek asymptotic so-
-lutions to the integrals in Eqs. (21) and (25) that are
-accurate in the limit NF →∞. We obtain such solutions
-by including contributions from poles to the right of the
-contours.
-In Eq. (21), the dominant contribution comes from the
-pole at s = 5/6 and, in fact, provides an excellent approx-
-imation for
-
-T 2
-C
-
-N when NF > 1. Applying Cauchy’s
-integral formula to compute the pole residue at s = 5/6
-yields the following expression for
-
-T 2
-C
-
-N:
-
-T 2
-C
-
-N ≈
-
-T 2
-G
- 
-1 +
-40
-9√π
-× Γ
-
-1/12, 5/6, 11/6, 17/6
-17/12, 11/3, 1/6
-
-σ2
-χN −5/6
-F
-
-.
-(30)
-For
-
-T 2
-C
-
-D, the dominant contribution comes from the
-pole at s = 1. Applying Cauchy’s integral formula, we
-obtain
-
-T 2
-C
-
-D ≈1 + 8
-π2 Γ
-
-13/12, 1/6, 1/3, 2/3
-5/12, 11/6, 11/6
-
-σ2
-χN −7/6
-F
-. (31)
 6
-As we can see in Eqs. (29) and (31),
-
-T 2
-C
-
-D is slightly
-greater than one. Indeed, assuming
-
-T 2
-C
-
-D ≈1 yields a
-good, yet overestimated value for the C-tilt variance.
-D.
-G-tilt, C-tilt error
-The G-tilt, C-tilt error EGC is a measure of the G-
-tilt, C-tilt anisoplanatism [23, 26], which is an important
-metric for adaptive-optics system performance [37–39].
-We deﬁne this error as the root-mean-square diﬀerence
-between the G-tilt and C-tilt angles, such that
-EGC =
-rD
-|TG −TC|2E
-.
-(32)
-It is easy to show using Eq. (4) that EGC is equivalent
-to
-EGC =
-q
-⟨T 2
-C⟩−⟨T 2
-G⟩.
-(33)
-Note that the G-tilt angle TG equals Eq. (4) with
-exp [2χ (ρ)] = 1.
-Substituting Eq. (27) into Eq. (33)
-and simplifying yields
-EGC =
-s
-⟨T 2
-GC⟩−σ2
-χA ⟨T 2
-G⟩
-1 + σ2
-χA
-.
-(34)
-Deriving approximate relations for the G-tilt, C-tilt er-
-ror using the asymptotic expressions above is somewhat
-ad hoc because the value of the numerator is approxi-
-mately zero. Nevertheless, we can obtain relatively accu-
-rate relations for EGC.
-Staring with NF ≪1, substituting the relevant parts
-of Eqs. (28) and (29) into the numerator and keeping
-only the ﬁrst two terms yields
-EGC ≈1.4017N 5/12
-F
-s
-σ2χ ⟨T 2
-G⟩
-⟨T 2
-C⟩D
-NF ≪1,
-(35)
-where we use all of Eq. (29) in the denominator of
-Eq. (35).
-For NF
-≫1, we substitute the germane parts of
-Eqs. (30) and (31) into the numerator of Eq. (34) and
-keep only the N −5/6
-F
-term. After simpliﬁcation, the re-
-sult is
-EGC ≈1.6331N −5/12
-F
-s
-σ2χ ⟨T 2
-G⟩
-⟨T 2
-C⟩D
-NF ≫1,
-(36)
-where we use all of Eq. (31) in the denominator.
-III.
-SIMULATIONS
-To validate the above theory, we employed wave-optics
-simulations. In practice, we simulated the propagation
-TABLE I. Simulation Parameters:
-Fresnel Number NF ,
-Pupil/Aperture Diameter D, Source-Plane Grid Spacing δsrc,
-Pupil-Plane Grid Spacing δpup, Number of Partial Propaga-
-tions n
-NF
-D (cm) δsrc (mm) δpup (mm) n
-0.500
-7.98
-10.4
-0.997
-13
-0.889
-10.6
-7.83
-1.33
 8
-1.58
-14.2
-5.87
-1.42
-7
-2.81
-18.9
-4.40
-1.89
-5
-5.00
-25.2
-3.30
-2.52
-4
-8.89
-33.6
-2.48
-3.36
-4
-15.8
-44.9
-1.86
-4.49
-5
-28.1
-59.8
-1.39
-5.98
-8
-50.0
-79.8
-1.04
-7.98
-12
-of a λ = 1 µm point source z = 10 km through atmo-
-spheric turbulence. Fried’s parameter r0 [40] and σ2
-χ were
-9.04 cm and 0.2, respectively. We changed the pupil di-
-ameter D to vary the Fresnel number NF from 0.5 to 50
-in 9 logarithmically spaced steps.
-We used the split-step method [41] to simulate wave
-propagation for each NF . To avoid aliasing, the simu-
-lated ﬁelds required grids that were 850 points on a side.
-The grid spacings and number of partial propagations
-depended on NF and are given in Table I.
-We determined the strengths or r0’s of the phase
-screens using the linear optimization method described
-in Ref. [41]. The number of phase screens used in a par-
-ticular NF simulation was equal to the number of partial
-propagations given in Table I. We generated each screen
-using the Fourier/spectral method augmented with sub-
-harmonics to account for low-spatial-frequency aberra-
-tions, especially tilt [42–45]. We used the modiﬁed von
-K´arm´an [6, 7] index of refraction power spectrum to
-synthesize the phase screens, where the inner and outer
-scales were unphysically small and large (l0 = λ/2 and
-L0 = 500 km), respectively. The purpose of this was to
-closely approximate the Kolmogorov spectrum, which we
-used to derive the theoretical expressions in Section II.
-After collimating the ﬁeld U in the pupil plane, we win-
-dowed U using a circle function with a diameter D equal
-to that of the corresponding NF. Then, we computed
-both the G-tilt and C-tilt using Lukin’s expression [9]
-T = 1
-k
-ZZ
-A
-Re [U (ρ)] ∇Im [U (ρ)] d2ρ
-ZZ
-A
-|U (ρ)|2 d2ρ
-−1
-k
-ZZ
-A
-Im [U (ρ)] ∇Re [U (ρ)] d2ρ
-ZZ
-A
-|U (ρ)|2 d2ρ
-.
-(37)
-In Eq. (37), we computed the gradients using fast Fourier
-transforms and evaluated the integrals over the pupil area
-A using Simpson’s rule. We computed the C-tilt by di-
-rectly applying Eq. (37). For the G-tilt, we extracted the
-7
-complex argument of U, “ﬂattened” its amplitude, and
-then applied Eq. (37).
-We computed both the G-tilt and C-tilt statistics from
-10, 000 independent turbulence realizations (trials) at
-each NF . We then divided the 10, 000 trials into par-
-titions of 500, computed the G-tilt and C-tilt variances
-over each partition, and averaged the variances. We also
-computed the standard deviation of the 20 G-tilt and C-
-tilt variances to show the ±1σ bounds on those results.
-IV.
-RESULTS
-Figure 1 shows the results. In the top plot, we dis-
-play the C-tilt standard deviation (also known as the
-noise-equivalent angle [26]) normalized by the diﬀraction-
-limited angular beam width λ/D.
-The “Meijer G,”
-“NF ≫1,” and “NF ≪1” traces are theoretical predic-
-tions using Eqs. (27) [in combination with Eqs. (13), (23),
-and (26)], Eqs. (30) and (31), and Eqs. (28) and (29), re-
-spectively. We have also included the normalized G-tilt
-angle standard deviation as the black dotted curve [see
-Eq. (13)]. Lastly, the red circles and black squares, both
-with error bars, are the C-tilt and G-tilt simulation re-
-sults.
-The bottom plot shows the normalized G-tilt, C-tilt er-
-ror versus NF . The “Meijer G,” “NF ≫1,” and “NF ≪
-1” traces are theoretical predictions using Eq. (34) [again,
-in combination with Eqs. (13), (23), and (26)], Eq. (36),
-and Eq. (35). The red circles with error bars are the sim-
-ulated results computed using the raw G-tilt and C-tilt
-angles and Eq. (32).
-Overall, the agreement between the simulated and the-
-oretical results is quite good. We can explain the minor
-diﬀerences between the curves by a combination of the
-approximations used to derive the theoretical expressions
-and the well-documented diﬃculty in properly including
-low-spatial-frequency aberrations in atmospheric turbu-
-lence simulations [42, 44, 45].
-Before concluding the paper, we would like to point
-out that while both the normalized and unnormalized
-G-tilt, C-tilt error approach zero as NF →0, the near-
-zone limits of the two EGC are diﬀerent. As NF →∞,
-the unnormalized EGC, like its corresponding far-zone
-expression, approaches zero. However, in the normalized
-case, the 1/NF decrease of EGC is exactly canceled by
-the 1/NF decrease of λ/D yielding the asymptotic value
-lim
-NF →∞
-EGC
-λ/D = 210/3
-π7/4 σ2
-χ
-s
-Γ
-
-1/12, 4/3, 11/12
-11/6, 5/12, 7/12
-
-.
-(38)
-In physical units (radians), the EGC initially increases
-with NF , reaches a maximum near NF = 1, and then
-decreases toward zero for NF > 1.
-10−1
-100
-101
-102
+10
+Matrix Size (n)
 0
-1
-2
-3
+5
+10
+Average Steps
+Figure 6: The change in average steps required for sen-
+sor relocation with increase in gear matrix size(𝑛× 𝑛)
+0
+5
+10
+15
+Sensor Number
+0
+20
+40
+Average Steps
+Figure 7: The average steps required for sensor reloca-
+tion with an increase in the number of sensors on gear
+matrix of size(4 × 4).
+takes 0.38 (±0.025) seconds. The sensor movement across
+connected channels takes 0.56 (±0.023) seconds.
+3.2
+Gear Matrix Size Analysis
+The first evaluation is GearUp ’s ability to navigate the sensor
+to the desired locations over different sizes of gear matrices.
+We conduct an experiment where we simulated a gear matrix
+of size 𝑛× 𝑛, with the value of 𝑛ranging from 3-9. We ran-
+domly select the start and end locations for four sensors and
+start their path simultaneously. We analyze the total steps
+for all four sensors to reach their end location. This experi-
+ment is repeated 128 times, and the average steps for each
+matrix size are reported in Figure 6. We observe a general
+linear increasing trend in the required number of steps as the
+matrix size increases, which indicates the effectiveness of the
+pathfinding algorithm, which finds near-optimal solutions
+close to the Manhattan distance.
+3.3
+Sensor Population Analysis
+The sensor population is another factor that impacts the
+path-finding capabilities of GearUp framework. To evaluate
+this, we simulate a gear matrix of 4 × 4 with 4 channels
+per gear. The number of sensors changed from 1 to 16, the
+system randomly selected the start and end locations, and
+the path planning module outputs the steps required to reach
+the end location. The process is repeated 128 times for each
+sensor number (1-16), and the average steps required for all
+the sensors to reach the end location is reported.
+Figure 7 shows the output results of the average steps
+required by the sensors to reach the target location on 4
+matrix as the number of sensors changes. We observe a
+general increasing trend in the number of steps required
+as the number of sensors increases. This is because as the
+number of sensors increases, the total available channel space
+on different gears decreases, resulting in sensors taking a
+longer path. We also observe that the standard deviation
+among required steps increases as the number of sensors
+increases.
 4
-p
-⟨T 2
-C⟩/ (λ/D)
-Meijer G
-NF ≫1
-NF ≪1
-p
-⟨T 2
-G⟩/ (λ/D)
-Sim (C-Tilt)
-Sim (G-Tilt)
-10−1
-100
-101
-102
-NF
-0.0
-0.1
-0.2
-0.3
-0.4
-0.5
-EGC/ (λ/D)
-Meijer G
-NF ≫1
-NF ≪1
-Sim
-FIG. 1. Normalized C-tilt standard deviation
-p
-⟨T 2
-C⟩/ (λ/D)
-(top) and normalized G-tilt, C-tilt error EGC/ (λ/D) (bot-
-tom) results. The bars are ±1σ.
-V.
+NEXT STEPS
+Although the preliminary results are encouraging, multiple
+research questions remain unanswered, leaving space for
+future research activities.
+Pathfinding Optimization. In this work, we implement a
+greedy path-finding algorithm for a multi-agent path-planning
+scenario, which is not ideal. Some cases exist in which the
+current system can run into a bottleneck state. In the future,
+we want to optimize this to minimize the required steps.
+Building upon rich literature on multi-agent path planning
+in the field of robotics [4, 17], we will explore the surface
+structural constraint-based algorithm adaptation.
+Uneven Surface Sensor Movement. The current gear matrix-
+based prototype is implemented on a flat surface for feasibil-
+ity verification. We envision this design to be implemented
+on flexible, uneven surfaces that people wear. Potential chal-
+lenges include rotation with soft, uneven gear structure and
+on-gear rail alignment. One possible direction to explore is
+having the flexible gears sandwiched between two flexible
+layers, which would allow them to adapt to the curvature
+while preventing direct contact of sensor movement with
+the user’s body.
+Hardware Miniaturization. The current prototype of the
+GearUp system uses market-available servo motors for gear
+matrix movement and sensor movement across different
+gears, this makes system size dependent on the size of servo
+motors. This prevents the current system from being directly
+applied to the wearable systems. In the future, we plan to ex-
+plore the potential solutions to miniaturize the servo motors
+along with the size of the whole system, so that it can be
+directly applied to the wearable systems. To achieve this we
+need to rethink the manufacturing of different components.
+The current prototype uses 3D printing or later cut com-
+ponents which can be replaced with moulding to improve
+precision.
+Conference’17, July 2017, Washington, DC, USA
+Shubham Rohal, Dong Yoon Lee, Phuc Nguyen, and Shijia Pan
+5
+RELATED WORK
+Besides the related work mentioned above, this section sum-
+marizes other notable parallel research efforts in mobile sen-
+sors and describes their limitations.
+Existing Sensing Mobility Platforms. Multiple robotics sens-
+ing platforms are explored to increase the adaptability and
+sensing area of a system effectively. Autonomous ground
+robots are used for various agricultural sensing tasks [1, 16].
+While on-water robots have been explored for applications
+such as water quality monitoring [8]. Unmanned Aerial Ve-
+hicles (UAVs) have been explored for numerous applications
+such as remote delivery, surveillance, and warfare appli-
+cations [2, 10]. Similarly, Unmanned Underwater Vehicles
+(UUVs) are also explored for applications such as sea ex-
+ploration and rescue missions [14]. Various on-rail mobile
+platforms are also explored for applications such as railway
+maintenance, pipe surveillance, and navigation [7, 11]. As
+previously discussed, these mobile platforms are not directly
+applicable to wearable sensing systems.
+Adaptive Design for Wearables. Prior work has explored
+various aspects of wearable system adaptation. Soft and struc-
+tured conformative designs assist the wearable systems to
+better adapt to bodies of different physiology differences
+[5, 12]. They morph into the user’s body shape physically to
+enable more comfortable fitting but cannot provide sensor
+mobility. The other work in wearable systems explores the
+use of body robots to assist humans in rehabilitation move-
+ment [6] based on adapting to the force generated by the
+user; the system uses the load cell to adjust the actuation
+proportional to the human-generated force. However, this
+system adapts according to force generation but lacks the
+sensor movement for accurate force reading across subjects.
+6
 CONCLUSION
-In this paper, we derived three closed-form expressions
-for the spherical-wave C-tilt variance
-
-T 2
-C
-
-in constant-
-C2
-n Kolomogorov atmospheric turbulence. All three ex-
-pressions were functions of the Fresnel number NF . The
-ﬁrst was applicable for all NF and was in the form of a
-Meijer G-function. The second and third were much sim-
-pler relations and valid in the asymptotic limits NF →0
-and NF →∞(i.e., the far- and near-zones, respectively).
-In addition, we investigated the diﬀerence between G-tilt
-and C-tilt and derived corresponding relations for the G-
-tilt, C-tilt error EGC due to a scintillated spherical wave.
-Lastly, we validated our analysis by comparing the theory
-with wave-optics simulations. Our
-
-T 2
-C
-
-and EGC pre-
-dictions were in very good agreement with the simulation
-results.
-The rigorous analysis of C-tilt presented in this paper
-will ﬁnd use in quantifying the performance of centroid-
-based trackers and wavefront sensors, which are critical
-8
-components in adaptive-optics systems.
-ACKNOWLEDGMENTS
-The authors would like to thank the Joint Directed En-
-ergy Transition Oﬃce for sponsoring this research. Ap-
-proved for public release; distribution is unlimited. Pub-
-lic Aﬀairs release approval SMDC PAO#5063. M.W.H.:
-The views expressed in this paper are those of the author
-and do not reﬂect the policy or position of Epsilon C5I
-or Epsilon Systems.
-[1] V. I. Tatarskii, Wave Propagation in a Turbulent Medium
-(McGraw-Hill, New York, New York, 1961).
-[2] R. Fante, Electromagnetic beam propagation in turbu-
-lent media, Proc. IEEE 63, 1669 (1975).
-[3] R. Fante, Electromagnetic beam propagation in turbu-
-lent media: An update, Proc. IEEE 68, 1424 (1980).
-[4] A. Ishimaru, Wave Propagation and Scattering in Ran-
-dom Media (IEEE Press, Piscataway, New Jersey, 1999).
-[5] M. C. Roggemann and B. M. Welsh, Imaging Through
-Turbulence (CRC Press, Boca Raton, Florida, 1996).
-[6] L.
-C.
-Andrews
-and
-R.
-L.
-Phillips,
-Laser Beam Propagation through Random Media,
-2nd
-ed. (SPIE Press, Bellingham, Washington, 2005).
-[7] R. J. Sasiela, Electromagnetic Wave Propagation in Tur-
-bulence, 2nd ed. (SPIE Press, Bellingham, Washington,
-2007).
-[8] R. B. Holmes, Adaptive optics for directed energy: Fun-
-damentals and methodology, AIAA J. 60, 5633 (2022),
-https://doi.org/10.2514/1.J061766.
-[9] V. P. Lukin and B. V. Fortes, Adaptive Beaming and
-Imaging in the Turbulent Atmosphere
-(SPIE Press,
-Bellingham, Washington, 2002).
-[10] F. Roddier, ed., Adaptive Optics in Astronomy (Cam-
-bridge University Press, New York, New York, 1999).
-[11] R. K. Tyson, Principles of Adaptive Optics, 4th ed. (CRC
-Press, Boca Raton, Florida, 2015).
-[12] J. W. Hardy, Adaptive Optics for Astronomical Tele-
-scopes (Oxford University Press, New York, New York,
-1998).
-[13] P. H. Merritt and M. F. Spencer, Beam Control for Laser
-Systems, 2nd ed. (Directed Energy Professional Society,
-Albuquerque, New Mexico, 2018).
-[14] G. A. Tyler, Bandwidth considerations for tracking
-through turbulence, J. Opt. Soc. Am. A 11, 358 (1994).
-[15] R. J. Noll, Zernike polynomials and atmospheric turbu-
-lence, J. Opt. Soc. Am. 66, 207 (1976).
-[16] V. N. Mahajan, Optical Imaging and Aberrations, Part
-III: Wavefront Analysis (SPIE Press, Bellingham, Wash-
-ington, 2013).
-[17] V. Lakshminarayanan and A. Fleck, Zernike polynomials:
-A guide, J. Mod. Opt. 58, 545 (2011).
-[18] J. Herrmann, Cross coupling and aliasing in modal wave-
-front estimation, J. Opt. Soc. Am. 71, 989 (1981).
-[19] H. T. Yura and M. T. Tavis, Centroid anisoplanatism,
-J. Opt. Soc. Am. A 2, 765 (1985).
-[20] G.
-A.
-Tyler
-and
-D.
-L.
-Fried,
-Image-position
-error
-associated
-with
-a
-quadrant
-detector,
-J. Opt. Soc. Am. 72, 804 (1982).
-[21] D.
-J.
-Burrell,
-M.
-F.
-Spencer,
-M.
-K.
-Beason,
-and
-R.
-G.
-Driggers,
-Active-tracking
-scaling
-laws
-using
-the
-noise-equivalent
-angle
-due
-to
-speckle,
-J. Opt. Soc. Am. A 40, 904 (2023).
-[22] M. T. Tavis and H. T. Yura, Scintillation eﬀects on cen-
-troid anisoplanatism, J. Opt. Soc. Am. A 4, 57 (1987).
-[23] R.
-B.
-Holmes,
-Scintillation-induced
-jitter
-of
-projected
-light
-with
-centroid
-trackers,
-J. Opt. Soc. Am. A 26, 313 (2009).
-[24] S. E. J. Shaw and E. M. Tomlinson, Analytic propagation
-variances and power spectral densities from a wave-optics
-perspective, J. Opt. Soc. Am. A 36, 1267 (2019).
-[25] E.
-W.
-Mitchell,
-D.
-J.
-Burrell,
-M.
-W.
-Hyde,
-R.
-G.
-Driggers,
-and
-M.
-F.
-Spencer,
-Scintillation-
-induced
-centroid
-jitter:
-Analytical
-solutions,
-in
-Unconventional Imaging, Sensing, and Adaptive Optics 2024,
-Vol. 13149, edited by J. J. Dolne, S. R. Bose-Pillai,
-and M. Kalensky, International Society for Optics and
-Photonics (SPIE, 2024) p. 131490Q.
-[26] E. W. Mitchell, D. J. Burrell, M. W. Hyde, R. G. Drig-
-gers, and M. F. Spencer, Scaling laws for the noise-
-equivalent angle and C-tilt, G-tilt anisoplanatism due to
-scintillation, Appl. Opt. 64, E11 (2025).
-[27] V. I. Tatarskii, Eﬀects of the Turbulent Atmosphere on
-Wave Propagation, Tech. Rep. 197205 (U.S. Department
-of Commerce, 1971).
-[28] Y. A. Brychkov, O. I. Marichev, and N. V. Savischenko,
-Handbook of Mellin Transforms (CRC Press, Boca Ra-
-ton, Florida, 2018).
-[29] J. W. Goodman, Introduction to Fourier Optics, 4th ed.
-(W. H. Freeman and Company, New York, New York,
-2017).
-[30] J. D. Gaskill, Linear Systems, Fourier Transforms, and
-Optics (Wiley, Hoboken, New Jersey, 1978).
-[31] Y. L. Luke, Mathematical Functions and Their Approxi-
-mations (Academic Press, New York, New York, 1975).
-[32] Wolfram
-Research,
-Inc.,
-Meijer
-G-Function,
-https://mathworld.wolfram.com/MeijerG-Function.html.
-[33] D. L. Fried, Propagation of a spherical wave in a turbu-
-lent medium, J. Opt. Soc. Am. 57, 175 (1967).
-[34] I. S. Gradshteyn and I. M. Ryzhik, Table of Integrals,
-Series, and Products, 8th ed. (Academic Press, Waltham,
-Massachusetts, 2015).
-[35] G. B. Arfken, H. J. Weber, and F. E. Harris, Mathe-
-matical Methods for Physicists, 7th ed. (Academic Press,
-Waltham, Massachusetts, 2013).
-[36] G. J. Gbur, Mathematical Methods for Optical Physics
-and Engineering (Cambridge University Press, Cam-
-bridge, United Kingdom, 2011).
-[37] J. D. Barchers, D. L. Fried, and D. J. Link, Evaluation
-9
-of the performance of Hartmann sensors in strong scin-
-tillation, Appl. Opt. 41, 1012 (2002).
-[38] M. T. Banet and M. F. Spencer, Compensated-beacon
-adaptive optics using least-squares phase reconstruction,
-Opt. Express 28, 36902 (2020).
-[39] M. Kalensky, D. Getts, M. T. Banet, D. J. Burrell, M. W.
-Hyde, and M. F. Spencer, Limitations of beam-control
-compensation, Opt. Express 32, 42301 (2024).
-[40] D. L. Fried, Optical resolution through a randomly in-
-homogeneous medium for very long and very short expo-
-sures, J. Opt. Soc. Am. 56, 1372 (1966).
-[41] J. D. Schmidt, Numerical Simulation of Optical Wave
-Propagation with Examples in MATLAB (SPIE Press,
-Bellingham, Washington, 2010).
-[42] R.
-G.
-Lane,
-A.
-Glindemann,
-and
-J.
-C.
-Dainty,
-Simulation
-of
-a
-Kolmogorov
-phase
-screen,
-Waves in Random Media 2, 209 (1992).
-[43] R. Frehlich, Simulation of laser propagation in a turbu-
-lent atmosphere, Appl. Opt. 39, 393 (2000).
-[44] M. Carbillet and A. Riccardi, Numerical modeling of at-
-mospherically perturbed phase screens: New solutions
-for classical fast Fourier transform and Zernike methods,
-Appl. Opt. 49, G47 (2010).
-[45] M.
-Charnotskii,
-Comparison
-of
-four
-tech-
-niques
-for
-turbulent
-phase
-screens
-simulation,
-J. Opt. Soc. Am. A 37, 738 (2020).
+In conclusion, we propose a surface structure assistive frame-
+work to enable mobility for wearable systems on arbitrary
+surfaces. We present GearUp , a gear-based surface augmenta-
+tion solution to enable concurrent 2D movement on surfaces
+for multiple sensors. We implement the physical prototype
+and show the feasibility of the hardware with preliminary
+characterization. We also analyze the system performance
+via simulation for a matrix of up to 9 × 9 locations with up
+to 16 concurrent sensors.
+REFERENCES
+[1] Yuhao Bai, Baohua Zhang, Naimin Xu, Jun Zhou, Jiayou Shi, and Zhi-
+hua Diao. 2023. Vision-based navigation and guidance for agricultural
+autonomous vehicles and robots: A review. Computers and Electronics
+in Agriculture 205 (2023), 107584.
+[2] Paul G Fahlstrom, Thomas J Gleason, and Mohammad H Sadraey. 2022.
+Introduction to UAV systems. John Wiley & Sons.
+[3] Kaiyuan Hou, Stephen Xia, Junyi Wu, Minghui Zhao, Emily Bejerano,
+and Xiaofan Jiang. 2022. AI Stethoscope for Home Self-Diagnosis with
+AR Guidance. In Proceedings of the 20th ACM Conference on Embedded
+Networked Sensor Systems. 762–763.
+[4] Hongtao Hu, Xurui Yang, Shichang Xiao, and Feiyang Wang. 2023.
+Anti-conflict AGV path planning in automated container terminals
+based on multi-agent reinforcement learning. International Journal of
+Production Research 61, 1 (2023), 65–80.
+[5] Kunpeng Huang, Ruojia Sun, Ximeng Zhang, Md Tahmidul Is-
+lam Molla, Margaret Dunne, Francois Guimbretiere, and Cindy Hsin-
+Liu Kao. 2021. WovenProbe: probing possibilities for weaving fully-
+integrated on-skin systems deployable in the field. In Proceedings of
+the 2021 ACM Designing Interactive Systems Conference. 1143–1158.
+[6] Prashant K Jamwal, Sheng Q Xie, Shahid Hussain, and John G Parsons.
+2012. An adaptive wearable parallel robot for the treatment of ankle
+injuries. IEEE/ASME Transactions on mechatronics 19, 1 (2012), 64–75.
+[7] Jalal Taheri Kahnamouei and Mehrdad Moallem. 2023. A comprehen-
+sive review of in-pipe robots. Ocean Engineering 277 (2023), 114260.
+[8] Saber Kazeminasab, Mohsen Aghashahi, and M Katherine Banks. 2020.
+Development of an inline robot for water quality monitoring. In 2020
+5th International Conference on Robotics and Automation Engineering
+(ICRAE). IEEE, 106–113.
+[9] ER Laithwaite and MT Hardy. 1970. Rack-and-pinion motors: hybrid of
+linear and rotary machines. In Proceedings of the Institution of Electrical
+Engineers, Vol. 117. IET, 1105–1112.
+[10] John J Leonard and Alexander Bahr. 2016. Autonomous underwater
+vehicle navigation. Springer handbook of ocean engineering (2016),
+341–358.
+[11] Haochen Liu, Miftahur Rahman, Masoumeh Rahimi, Andrew Starr,
+Isidro Durazo-Cardenas, Cristobal Ruiz-Carcel, Agusmian Om-
+pusunggu, Amanda Hall, and Robert Anderson. 2023. An autonomous
+rail-road amphibious robotic system for railway maintenance using
+sensor fusion and mobile manipulator. Computers and Electrical Engi-
+neering 110 (2023), 108874.
+[12] Eric Markvicka, Guanyun Wang, Yi-Chin Lee, Gierad Laput, Carmel
+Majidi, and Lining Yao. 2019. Electrodermis: Fully untethered, stretch-
+able, and highly-customizable electronic bandages. In Proceedings of
+the 2019 CHI Conference on Human Factors in Computing Systems. 1–10.
+[13] Shubham Rohal, Shreya Shriram, VP Nguyen, and Shijia Pan. 2022.
+FinePose: Fine-Grained Postural Muscle Profiling via Haptic Vibration
+Signals. In Proceedings of the 2022 Workshop on Body-Centric Computing
+Systems. 19–24.
+[14] Avilash Sahoo, Santosha K Dwivedy, and PS Robi. 2019. Advancements
+in the field of autonomous underwater vehicle. Ocean Engineering 181
+(2019), 145–160.
+[15] Michal Teplan et al. 2002. Fundamentals of EEG measurement. Mea-
+surement science review 2, 2 (2002), 1–11.
+[16] Jessica Van Brummelen, Marie O’brien, Dominique Gruyer, and
+Homayoun Najjaran. 2018. Autonomous vehicle perception: The tech-
+nology of today and tomorrow. Transportation research part C: emerging
+technologies 89 (2018), 384–406.
+[17] Liang Wang, Kezhi Wang, Cunhua Pan, Wei Xu, Nauman Aslam, and
+Lajos Hanzo. 2020. Multi-agent deep reinforcement learning-based
+trajectory planning for multi-UAV assisted mobile edge computing.
+IEEE Transactions on Cognitive Communications and Networking 7, 1
+(2020), 73–84.
 
 ==================================================
