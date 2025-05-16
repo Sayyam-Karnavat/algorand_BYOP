@@ -1,7 +1,8 @@
+```python
 import hashlib
 import json
 import os
-from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client import AlgodClient, IndexerClient
 from algosdk.v2client.indexer import IndexerClient
 from algosdk import mnemonic, account, transaction, encoding
 import algokit_utils
@@ -9,11 +10,8 @@ import re
 import requests
 from multiformats_cid import make_cid
 import multihash
-from dotenv import load_dotenv
-import logging
 
 class LoadEnvVars:
-    """Loads environment variables for API keys and tokens."""
     def __init__(self):
         load_dotenv()
 
@@ -39,68 +37,19 @@ class ARC19:
         try:
             self.algod_token = os.environ.get('ALGOD_TOKEN', '')
             self.algod_client = AlgodClient(algod_token=self.algod_token, algod_address=self.algod_address)
-            self.algod_indexer = IndexerClient(indexer_token=self.algod_token, indexer_address=self.indexer_address)
-
+            self.reserve_address_from_cid = self.algod_client.reserve_address_from_cid
         except Exception as e:
             logging.error(f"Failed to initialize Algod client: {str(e)}")
-            raise
-
-        # Suggested params
-        try:
-            self.sp = self.algod_client.suggested_params()
-        except Exception as e:
-            logging.error(f"Failed to retrieve suggested parameters: {str(e)}")
-            raise
-
-    def upload_metadata(self, file_path: str) -> str | None:
-        """
-        Uploads the digital assets to IPFS and returns the IPFS hash.
-        :param file_path: Path to the file to be uploaded
-        :return: The IPFS hash of the uploaded file or None on failure
-        """
-        if not os.path.exists(file_path):
-            logging.error(f"File does not exist at {file_path}")
-            return None
-
-        try:
-            with open(file_path, 'rb') as file:
-                url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-                headers = {
-                    "pinata_api_key": self.pinata_api_key,
-                    "pinata_secret_api_key": self.pinata_secret_api_key,
-                }
-                filename = os.path.basename(file_path)
-
-                files = {"file": (filename, file)}
-                response = requests.post(url=url, files=files, headers=headers)
-                if response.status_code == 200:
-                    ipfs_hash = response.json().get("IpfsHash")
-                    return ipfs_hash
-                else:
-                    logging.error(f"Failed to upload file: {response.status_code} {response.text}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"An error occurred while uploading metadata: {str(e)}")
-
-        return None
-
-    def reserve_address_from_cid(self, cid: str) -> str:
-        decoded_cid = multihash.decode(make_cid(cid).multihash)
-        reserve_address = encoding.encode_address(decoded_cid.digest)
-        assert encoding.is_valid_address(reserve_address)
-        return reserve_address
-
-    def version_from_cid(self, cid: str) -> int:
-        return make_cid(cid).version()
-
-    def get_algod_client(self) -> AlgodClient | None:
-        try:
-            self.algod_token = os.environ.get('ALGOD_TOKEN', '')
-            self.algod_client = AlgodClient(algod_token=self.algod_token, algod_address=self.algod_address)
-            return self.algod_client
-        except Exception as e:
-            logging.error(f"Failed to initialize Algod client: {str(e)}")
-            return None
 
 if __name__ == "__main__":
     # Load environment variables here or wherever it's necessary
     load_env_vars = LoadEnvVars()
+
+    # Initialize Algod and Indexer clients
+    arc19 = ARC19()
+
+    # Reserve an address from a CID
+    cid = "0x123456789abcdef"
+    reserve_address = arc19.reserve_address_from_cid(cid)
+    print(f"Reserved address: {reserve_address}")
+```
