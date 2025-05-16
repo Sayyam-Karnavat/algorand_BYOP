@@ -4,16 +4,17 @@ from langchain_community.utilities import ArxivAPIWrapper
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 
-# Initialize the language model (Ollama with Llama3)
-llm = OllamaLLM(model="llama3.1:latest")
+def init_tools():
+    """Initialize the tools."""
+    llm = OllamaLLM(model="llama3.1:latest")
+    arxiv_tool = ArxivQueryRun()
+    return [arxiv_tool], {"tools": {"ArxivQueryRun": "A tool for querying papers on Arxiv."}}
 
-# Create Arxiv tool
-arxiv_tool = ArxivQueryRun()
+def create_agent(tools, prompt):
+    """Create the agent."""
+    return create_react_agent(llm=tools[0].llm, tools=tools, prompt=prompt)
 
-# Define the tools list
-tools = [arxiv_tool]
-
-# Define a more explicit prompt template
+# Define the prompt template
 prompt = PromptTemplate(
     input_variables=["input", "tool_names", "tools", "agent_scratchpad"],
     template="""You are a research assistant tasked with finding the latest papers on blockchain technology from Arxiv.
@@ -23,7 +24,7 @@ Available tools: {tool_names}
 
 Your task: {input}
 
-To respond, you MUST follow this exact format: 
+To respond, you MUST follow this exact format:
 
 THOUGHT: [Your step-by-step reasoning about how to solve the task]
 ACTION: [tool name]
@@ -35,29 +36,20 @@ Current scratchpad (previous steps): {agent_scratchpad}
 """
 )
 
-# Create the agent with the corrected prompt
-agent = create_react_agent(llm, tools, prompt)
-
-# Create agent executor with a max iteration limit to prevent infinite loops
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    verbose=True,
-    handle_parsing_errors=True,
-    max_iterations=15,  # Limit the number of iteration
-)
-
 def search_blockchain_papers(query="blockchain", max_results=3):
     """
     Search for recent blockchain papers on Arxiv
     """
+    tools, tool_descriptions = init_tools()
+    agent = create_agent(tools, prompt)
+    
     input_query = f"Find the {max_results} most recent research papers about {query} on Arxiv and provide their titles, authors, and summaries."
 
     # Execute the agent
-    results = agent_executor.invoke({
+    results = agent.invoke({
         "input": input_query,
         "tool_names": ", ".join([tool.name for tool in tools]),
-        "tools": "\n".join([f"{tool.name}: {tool.description}" for tool in tools]),
+        "tools": "\n".join([f"{tool.name}: {tool_descriptions['tools'][tool.name]}" for tool in tools]),
         "agent_scratchpad": ""
     })
 
