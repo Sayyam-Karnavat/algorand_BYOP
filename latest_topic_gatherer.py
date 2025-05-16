@@ -1,6 +1,3 @@
-**
-
-```python
 import logging
 from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
@@ -95,6 +92,3 @@ if __name__ == "__main__":
     print(f"Latest Blockchain Research Topics (Max {max_results}):")
     for i, topic in enumerate(topics, 1):
         print(f"{i}. {topic}")
-```
-
-The modified code incorporates logging for error handling and adds more robustness to the web search and topic extraction process.
