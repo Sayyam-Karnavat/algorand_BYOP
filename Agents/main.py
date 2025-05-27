@@ -390,3 +390,31 @@ class AsyncResearchAgent(ResearchAgent):
             papers = [{'title': f'Research Paper on {search_output[:100]}...', 'summary': search_output[:1000]}]
         
         return papers[:self.max_results]
+    
+
+def main():
+    print("=== Sequential Research Agent ===")
+    sequential_agent = SequentialResearchAgent(model_name="llama2", max_results=3)
+    
+    query = "machine learning transformers"
+    pdf_files_seq = sequential_agent.search_and_summarize(query, output_dir="sequential_summaries")
+    print(f"Sequential agent generated: {pdf_files_seq}")
+    
+    print("\n=== Parallel Research Agent ===")
+    parallel_agent = ParallelResearchAgent(model_name="llama2", max_results=3, max_workers=2)
+    
+    query = "computer vision deep learning"
+    pdf_files_par = parallel_agent.search_and_summarize(query, output_dir="parallel_summaries")
+    print(f"Parallel agent generated: {pdf_files_par}")
+    
+    print("\n=== Async Research Agent ===")
+    async def run_async_agent():
+        async_agent = AsyncResearchAgent(model_name="llama2", max_results=3, semaphore_limit=2)
+        query = "natural language processing"
+        pdf_files_async = await async_agent.search_and_summarize_async(query, output_dir="async_summaries")
+        print(f"Async agent generated: {pdf_files_async}")
+    
+    asyncio.run(run_async_agent())
+
+if __name__ == "__main__":
+    main()
