@@ -197,3 +197,29 @@ class SequentialResearchAgent(ResearchAgent):
         
         logger.info(f"Sequential processing completed. Generated {len(pdf_files)} PDFs.")
         return pdf_files
+    
+    def parse_search_results(self, search_output: str) -> List[Dict[str, str]]:
+        """Parse search results from arxiv tool output."""
+        papers = []
+        
+        # Try to extract paper information from the search output
+        lines = search_output.split('\n')
+        current_paper = {}
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('Title:'):
+                if current_paper:
+                    papers.append(current_paper)
+                current_paper = {'title': line[6:].strip()}
+            elif line.startswith('Summary:') or line.startswith('Abstract:'):
+                current_paper['summary'] = line[8:].strip() if line.startswith('Summary:') else line[9:].strip()
+        
+        if current_paper:
+            papers.append(current_paper)
+        
+        # If parsing fails, create dummy entries
+        if not papers:
+            papers = [{'title': f'Research Paper on {search_output[:100]}...', 'summary': search_output[:1000]}]
+        
+        return papers[:self.max_results]
