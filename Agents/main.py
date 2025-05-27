@@ -52,3 +52,67 @@ class ResearchAgent:
         )
         
         self.tools = [self.arxiv_tool, self.summarize_tool]
+
+
+    def setup_agent(self):
+        """Setup the ReAct agent."""
+        template = """
+        You are a research assistant that helps find and summarize academic papers.
+        
+        You have access to the following tools:
+        {tools}
+        
+        Use the following format:
+        Question: the input question you must answer
+        Thought: you should always think about what to do
+        Action: the action to take, should be one of [{tool_names}]
+        Action Input: the input to the action
+        Observation: the result of the action
+        ... (this Thought/Action/Action Input/Observation can repeat N times)
+        Thought: I now know the final answer
+        Final Answer: the final answer to the original input question
+        
+        Question: {input}
+        Thought: {agent_scratchpad}
+        """
+        
+        prompt = PromptTemplate.from_template(template)
+        
+        self.agent = create_react_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=prompt
+        )
+        
+        self.agent_executor = AgentExecutor(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            handle_parsing_errors=True,
+            max_iterations=10
+        )
+    
+    def summarize_paper(self, paper_content: str) -> str:
+        """Summarize a research paper using the LLM."""
+        summarize_prompt = f"""
+        Please provide a comprehensive summary of this research paper. Include:
+        1. Main research question/objective
+        2. Key methodology used
+        3. Major findings/results
+        4. Conclusions and implications
+        5. Limitations mentioned by authors
+        
+        Paper content:
+        {paper_content[:4000]}  # Limit content to avoid token limits
+        
+        Summary:
+        """
+        
+        try:
+            summary = self.llm.invoke(summarize_prompt)
+            return summary
+        except Exception as e:
+            logger.error(f"Error summarizing paper: {e}")
+            return f"Error generating summary: {str(e)}"
+        
+    
