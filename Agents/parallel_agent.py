@@ -155,6 +155,4 @@ async def main():
     print(latex_content)
     
     # Save LaTeX content as a file for PDF compilation
-    latex_output = f"""<xaiArtifact artifact_id="4936decf-4b35-4e48-8e50-4bdd5519d5a1" artifact_version_id="858d2130-a0d5-4659-bd4d-0e149a4925cd" title="research_summaries.tex" contentType="text/latex">
-{latex_content}
-
+    latex_output = f"""<xaiArtifact artifact_id="4936decf-4b35-4e48-8e50-4bdd5519d5a1" artifact_version_id="858d2130-a0d5-4659-bd4d-0e149a4925cd" title="research_summaries.tex" contentType="text/latex">"""
