@@ -158,4 +158,42 @@ class ResearchAgent:
         except Exception as e:
             logger.error(f"Error creating PDF: {e}")
 
+
+class SequentialResearchAgent(ResearchAgent):
+    """Sequential agent that processes papers one by one."""
     
+    def search_and_summarize(self, query: str, output_dir: str = "summaries") -> List[str]:
+        """Search for papers and summarize them sequentially."""
+        os.makedirs(output_dir, exist_ok=True)
+        
+        logger.info(f"Starting sequential search for: {query}")
+        
+        # Search for papers
+        search_result = self.agent_executor.invoke({
+            "input": f"Search for recent research papers about: {query}"
+        })
+        
+        # Parse the search results (this is simplified - you might need to adjust based on actual output)
+        papers = self.parse_search_results(search_result['output'])
+        
+        summaries = []
+        pdf_files = []
+        
+        for i, paper in enumerate(papers):
+            logger.info(f"Processing paper {i+1}/{len(papers)}: {paper.get('title', 'Unknown')}")
+            
+            # Summarize the paper
+            summary = self.summarize_paper(paper.get('summary', ''))
+            summaries.append(summary)
+            
+            # Create PDF
+            filename = f"{output_dir}/summary_{i+1}_{query.replace(' ', '_')}.pdf"
+            self.create_pdf(
+                title=paper.get('title', f'Research Paper {i+1}'),
+                summary=summary,
+                filename=filename
+            )
+            pdf_files.append(filename)
+        
+        logger.info(f"Sequential processing completed. Generated {len(pdf_files)} PDFs.")
+        return pdf_files
