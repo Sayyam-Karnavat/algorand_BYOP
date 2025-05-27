@@ -223,3 +223,170 @@ class SequentialResearchAgent(ResearchAgent):
             papers = [{'title': f'Research Paper on {search_output[:100]}...', 'summary': search_output[:1000]}]
         
         return papers[:self.max_results]
+
+class ParallelResearchAgent(ResearchAgent):
+    """Parallel agent that processes papers concurrently."""
+    
+    def __init__(self, model_name: str = "llama2", max_results: int = 5, max_workers: int = 3):
+        super().__init__(model_name, max_results)
+        self.max_workers = max_workers
+    
+    def search_and_summarize(self, query: str, output_dir: str = "summaries") -> List[str]:
+        """Search for papers and summarize them in parallel."""
+        os.makedirs(output_dir, exist_ok=True)
+        
+        logger.info(f"Starting parallel search for: {query}")
+        
+        # Search for papers
+        search_result = self.agent_executor.invoke({
+            "input": f"Search for recent research papers about: {query}"
+        })
+        
+        papers = self.parse_search_results(search_result['output'])
+        
+        pdf_files = []
+        
+        # Process papers in parallel
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all tasks
+            future_to_paper = {
+                executor.submit(self.process_single_paper, paper, i, query, output_dir): (paper, i)
+                for i, paper in enumerate(papers)
+            }
+            
+            # Collect results as they complete
+            for future in as_completed(future_to_paper):
+                paper, index = future_to_paper[future]
+                try:
+                    pdf_file = future.result()
+                    if pdf_file:
+                        pdf_files.append(pdf_file)
+                    logger.info(f"Completed processing paper {index + 1}")
+                except Exception as e:
+                    logger.error(f"Error processing paper {index + 1}: {e}")
+        
+        logger.info(f"Parallel processing completed. Generated {len(pdf_files)} PDFs.")
+        return pdf_files
+    
+    def process_single_paper(self, paper: Dict[str, str], index: int, query: str, output_dir: str) -> str:
+        """Process a single paper (summarize and create PDF)."""
+        logger.info(f"Processing paper {index+1}: {paper.get('title', 'Unknown')}")
+        
+        # Summarize the paper
+        summary = self.summarize_paper(paper.get('summary', ''))
+        
+        # Create PDF
+        filename = f"{output_dir}/summary_{index+1}_{query.replace(' ', '_')}.pdf"
+        self.create_pdf(
+            title=paper.get('title', f'Research Paper {index+1}'),
+            summary=summary,
+            filename=filename
+        )
+        
+        return filename
+    
+    def parse_search_results(self, search_output: str) -> List[Dict[str, str]]:
+        """Parse search results from arxiv tool output."""
+        # Same implementation as SequentialResearchAgent
+        papers = []
+        
+        lines = search_output.split('\n')
+        current_paper = {}
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('Title:'):
+                if current_paper:
+                    papers.append(current_paper)
+                current_paper = {'title': line[6:].strip()}
+            elif line.startswith('Summary:') or line.startswith('Abstract:'):
+                current_paper['summary'] = line[8:].strip() if line.startswith('Summary:') else line[9:].strip()
+        
+        if current_paper:
+            papers.append(current_paper)
+        
+        if not papers:
+            papers = [{'title': f'Research Paper on {search_output[:100]}...', 'summary': search_output[:1000]}]
+        
+        return papers[:self.max_results]
+
+class AsyncResearchAgent(ResearchAgent):
+    """Async agent for high-performance parallel processing."""
+    
+    def __init__(self, model_name: str = "llama2", max_results: int = 5, semaphore_limit: int = 3):
+        super().__init__(model_name, max_results)
+        self.semaphore = asyncio.Semaphore(semaphore_limit)
+    
+    async def search_and_summarize_async(self, query: str, output_dir: str = "summaries") -> List[str]:
+        """Search for papers and summarize them asynchronously."""
+        os.makedirs(output_dir, exist_ok=True)
+        
+        logger.info(f"Starting async search for: {query}")
+        
+        # Search for papers (this part is still synchronous as arxiv tool doesn't support async)
+        search_result = self.agent_executor.invoke({
+            "input": f"Search for recent research papers about: {query}"
+        })
+        
+        papers = self.parse_search_results(search_result['output'])
+        
+        # Process papers asynchronously
+        tasks = [
+            self.process_single_paper_async(paper, i, query, output_dir)
+            for i, paper in enumerate(papers)
+        ]
+        
+        pdf_files = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Filter out exceptions
+        successful_files = [f for f in pdf_files if isinstance(f, str)]
+        
+        logger.info(f"Async processing completed. Generated {len(successful_files)} PDFs.")
+        return successful_files
+    
+    async def process_single_paper_async(self, paper: Dict[str, str], index: int, query: str, output_dir: str) -> str:
+        """Process a single paper asynchronously."""
+        async with self.semaphore:
+            logger.info(f"Processing paper {index+1}: {paper.get('title', 'Unknown')}")
+            
+            # Run CPU-bound tasks in thread pool
+            loop = asyncio.get_event_loop()
+            
+            # Summarize the paper
+            summary = await loop.run_in_executor(
+                None, self.summarize_paper, paper.get('summary', '')
+            )
+            
+            # Create PDF
+            filename = f"{output_dir}/summary_{index+1}_{query.replace(' ', '_')}.pdf"
+            await loop.run_in_executor(
+                None, self.create_pdf, 
+                paper.get('title', f'Research Paper {index+1}'), summary, filename
+            )
+            
+            return filename
+    
+    def parse_search_results(self, search_output: str) -> List[Dict[str, str]]:
+        """Parse search results from arxiv tool output."""
+        # Same implementation as other agents
+        papers = []
+        
+        lines = search_output.split('\n')
+        current_paper = {}
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('Title:'):
+                if current_paper:
+                    papers.append(current_paper)
+                current_paper = {'title': line[6:].strip()}
+            elif line.startswith('Summary:') or line.startswith('Abstract:'):
+                current_paper['summary'] = line[8:].strip() if line.startswith('Summary:') else line[9:].strip()
+        
+        if current_paper:
+            papers.append(current_paper)
+        
+        if not papers:
+            papers = [{'title': f'Research Paper on {search_output[:100]}...', 'summary': search_output[:1000]}]
+        
+        return papers[:self.max_results]
