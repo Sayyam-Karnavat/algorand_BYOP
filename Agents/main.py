@@ -115,4 +115,47 @@ class ResearchAgent:
             logger.error(f"Error summarizing paper: {e}")
             return f"Error generating summary: {str(e)}"
         
+    def create_pdf(self, title: str, summary: str, filename: str):
+        """Create a PDF with the research summary."""
+        try:
+            doc = SimpleDocTemplate(filename, pagesize=A4)
+            styles = getSampleStyleSheet()
+            
+            # Custom styles
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=16,
+                spaceAfter=30,
+                alignment=1  # Center alignment
+            )
+            
+            content = []
+            
+            # Add title
+            content.append(Paragraph(title, title_style))
+            content.append(Spacer(1, 12))
+            
+            # Add timestamp
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            content.append(Paragraph(f"Generated on: {timestamp}", styles['Normal']))
+            content.append(Spacer(1, 12))
+            
+            # Add summary
+            content.append(Paragraph("Research Summary", styles['Heading2']))
+            content.append(Spacer(1, 12))
+            
+            # Split summary into paragraphs for better formatting
+            summary_paragraphs = summary.split('\n\n')
+            for para in summary_paragraphs:
+                if para.strip():
+                    content.append(Paragraph(para.strip(), styles['Normal']))
+                    content.append(Spacer(1, 6))
+            
+            doc.build(content)
+            logger.info(f"PDF saved as: {filename}")
+            
+        except Exception as e:
+            logger.error(f"Error creating PDF: {e}")
+
     
