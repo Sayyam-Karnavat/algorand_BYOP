@@ -37,4 +37,18 @@ class ResearchAgent:
         self.setup_agent()
 
 
+    def setup_tools(self):
+        """Setup the tools for the agent."""
+        self.arxiv_tool = Tool(
+            name="arxiv_search",
+            description="Search for research papers on ArXiv. Input should be a search query.",
+            func=self.arxiv.run
+        )
         
+        self.summarize_tool = Tool(
+            name="summarize_paper",
+            description="Summarize a research paper. Input should be the paper content.",
+            func=self.summarize_paper
+        )
+        
+        self.tools = [self.arxiv_tool, self.summarize_tool]
