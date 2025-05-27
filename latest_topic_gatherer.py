@@ -1,12 +1,7 @@
-import logging
 from langchain_ollama import ChatOllama
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain.agents import initialize_agent, AgentType
 from langchain.prompts import PromptTemplate
-import requests
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
 
 def get_blockchain_research_topics(max_results: int) -> list:
     """
@@ -18,15 +13,11 @@ def get_blockchain_research_topics(max_results: int) -> list:
     Returns:
         list: List of blockchain research topic names.
     """
-    # Input validation
-    if not isinstance(max_results, int) or max_results < 1:
-        raise ValueError("max_results must be a positive integer")
-
-    # Initialize the Ollama model with a stable version
-    llm = ChatOllama(model="llama2", temperature=0.3)
+    # Initialize the Ollama model
+    llm = ChatOllama(model="llama3", temperature=0.3)
 
     # Initialize DuckDuckGo search tool with a reasonable max_results for web search
-    search_tool = DuckDuckGoSearchResults(max_results=max_results)  
+    search_tool = DuckDuckGoSearchResults(max_results=5)  # Limiting to 5 web results for efficiency
 
     # Define a prompt template for extracting topics
     prompt_template = PromptTemplate(
@@ -48,41 +39,34 @@ def get_blockchain_research_topics(max_results: int) -> list:
     topic_chain = prompt_template | llm
 
     # Initialize the agent with the search tool
-    try:
-        agent = initialize_agent(
-            tools=[search_tool],
-            llm=llm,
-            agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=False
-        )
-    except Exception as e:
-        logging.error(f"Error initializing agent: {str(e)}")
-        return [f"Error initializing agent: {str(e)}"]
+    agent = initialize_agent(
+        tools=[search_tool],
+        llm=llm,
+        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        verbose=False
+    )
 
     # Perform the web search using the agent
     query = "latest blockchain research paper topics 2025"
     try:
-        search_result = requests.get(f"https://www.duckduckgo.com/?q={query}")
-        if search_result.status_code == 200:
-            web_content = search_result.text
-        else:
-            logging.error(f"Error during search: HTTP {search_result.status_code}")
-            return [f"Error during search: HTTP {search_result.status_code}"]
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error during search: {str(e)}")
+        search_result = agent.invoke(f"Search for: {query}")
+        # Extract the output from the agent's result (dictionary)
+        web_content = search_result.get("output", str(search_result))
+    except Exception as e:
         return [f"Error during search: {str(e)}"]
 
     # Extract topics using the topic chain
     try:
+        # Use invoke instead of run for RunnableSequence
         topics_response = topic_chain.invoke(
             {"web_content": web_content, "max_results": max_results}
         )
+        # Extract content from the response (ChatOllama returns a message object)
         topics_text = topics_response.content
         # Parse the response into a list
         topics = [topic.strip() for topic in topics_text.strip().split("\n") if topic.strip()]
         return topics[:max_results]
     except Exception as e:
-        logging.error(f"Error processing topics: {str(e)}")
         return [f"Error processing topics: {str(e)}"]
 
 if __name__ == "__main__":
