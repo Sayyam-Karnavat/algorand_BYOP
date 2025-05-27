@@ -1,8 +1,5 @@
-import os
 import json
-import re
 import requests
-import sqlite3
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Union
 from urllib.parse import urlparse, quote
@@ -243,3 +240,70 @@ def extract_keywords(text: str, num_keywords: int = 10, method: str = "frequency
         
     except Exception as e:
         return f"Error in keyword extraction: {str(e)}"
+    
+
+@tool
+def analyze_text_complexity(text: str) -> str:
+    """
+    Analyze text complexity and readability metrics.
+    
+    Args:
+        text: Input text to analyze
+    
+    Returns:
+        JSON string with complexity metrics
+    """
+    try:
+        sentences = sent_tokenize(text)
+        words = word_tokenize(text)
+        
+        # Basic metrics
+        num_sentences = len(sentences)
+        num_words = len(words)
+        num_chars = len(text)
+        
+        # Average metrics
+        avg_words_per_sentence = num_words / num_sentences if num_sentences > 0 else 0
+        avg_chars_per_word = num_chars / num_words if num_words > 0 else 0
+        
+        # Vocabulary diversity (Type-Token Ratio)
+        unique_words = len(set(word.lower() for word in words if word.isalnum()))
+        ttr = unique_words / num_words if num_words > 0 else 0
+        
+        # Simple readability score (Flesch Reading Ease approximation)
+        asl = avg_words_per_sentence  # Average sentence length
+        asw = sum(len(word) for word in words if word.isalnum()) / len([w for w in words if w.isalnum()])  # Average syllables per word (approximated by character length)
+        
+        flesch_score = 206.835 - (1.015 * asl) - (84.6 * (asw / 3))  # Simplified calculation
+        
+        # Complexity classification
+        if flesch_score >= 60:
+            complexity = "Easy"
+        elif flesch_score >= 30:
+            complexity = "Moderate"
+        else:
+            complexity = "Difficult"
+        
+        result = {
+            'basic_stats': {
+                'sentences': num_sentences,
+                'words': num_words,
+                'characters': num_chars,
+                'unique_words': unique_words
+            },
+            'averages': {
+                'words_per_sentence': round(avg_words_per_sentence, 2),
+                'chars_per_word': round(avg_chars_per_word, 2)
+            },
+            'complexity_metrics': {
+                'type_token_ratio': round(ttr, 3),
+                'flesch_score': round(flesch_score, 2),
+                'complexity_level': complexity
+            }
+        }
+        
+        return json.dumps(result, indent=2)
+        
+    except Exception as e:
+        return f"Error in text analysis: {str(e)}"
+    
