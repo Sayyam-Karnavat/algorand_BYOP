@@ -183,3 +183,63 @@ def get_paper_citations(arxiv_id: str) -> str:
     except Exception as e:
         return f"Error retrieving citation data: {str(e)}"
     
+
+
+@tool
+def extract_keywords(text: str, num_keywords: int = 10, method: str = "frequency") -> str:
+    """
+    Extract keywords from text using various methods.
+    
+    Args:
+        text: Input text
+        num_keywords: Number of keywords to extract
+        method: Extraction method - 'frequency', 'tfidf', 'rake'
+    
+    Returns:
+        JSON string with extracted keywords
+    """
+    try:
+        # Preprocess text
+        words = word_tokenize(text.lower())
+        stop_words = set(stopwords.words('english'))
+        lemmatizer = WordNetLemmatizer()
+        
+        # Remove stopwords and lemmatize
+        filtered_words = [
+            lemmatizer.lemmatize(word) 
+            for word in words 
+            if word.isalnum() and word not in stop_words and len(word) > 2
+        ]
+        
+        if method == "frequency":
+            # Simple frequency count
+            word_freq = Counter(filtered_words)
+            keywords = word_freq.most_common(num_keywords)
+            
+        elif method == "tfidf":
+            # Simple TF-IDF implementation
+            from sklearn.feature_extraction.text import TfidfVectorizer
+            
+            sentences = sent_tokenize(text)
+            vectorizer = TfidfVectorizer(stop_words='english', max_features=num_keywords)
+            tfidf_matrix = vectorizer.fit_transform(sentences)
+            
+            feature_names = vectorizer.get_feature_names_out()
+            mean_scores = tfidf_matrix.mean(axis=0).A1
+            keywords = [(feature_names[i], mean_scores[i]) for i in mean_scores.argsort()[::-1][:num_keywords]]
+            
+        else:  # Default to frequency
+            word_freq = Counter(filtered_words)
+            keywords = word_freq.most_common(num_keywords)
+        
+        result = {
+            'method': method,
+            'keywords': [{'word': word, 'score': float(score)} for word, score in keywords],
+            'total_words': len(filtered_words),
+            'unique_words': len(set(filtered_words))
+        }
+        
+        return json.dumps(result, indent=2)
+        
+    except Exception as e:
+        return f"Error in keyword extraction: {str(e)}"
