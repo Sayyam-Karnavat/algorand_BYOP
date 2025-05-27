@@ -142,3 +142,15 @@ def sequential_arxiv_search(topic, max_results=3):
     )
     
     return latex_content
+
+
+
+# Example usage
+if __name__ == "__main__":
+    topic = "machine learning"
+    latex_content = sequential_arxiv_search(topic)
+    print("Generated LaTeX content for PDF:")
+    print(latex_content)
+    
+    # Save LaTeX content as a file for PDF compilation
+    latex_output = f"""<xaiArtifact artifact_id="31251892-8bf8-46f6-83b7-16731a7694d7" artifact_version_id="de1c0673-3899-48de-863b-6391d0e875f1" title="research_summaries.tex" contentType="text/latex"""
