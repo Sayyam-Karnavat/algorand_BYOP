@@ -126,5 +126,60 @@ def search_arxiv_advanced(query: str, max_results: int = 10, sort_by: str = "rel
     except Exception as e:
         return f"Error searching ArXiv: {str(e)}"
     
-
+@tool
+def get_paper_citations(arxiv_id: str) -> str:
+    """
+    Get citation count and related papers for an ArXiv paper using Semantic Scholar API.
+    
+    Args:
+        arxiv_id: ArXiv paper ID (e.g., '2012.12345')
+    
+    Returns:
+        JSON string with citation information
+    """
+    try:
+        # Clean ArXiv ID
+        if arxiv_id.startswith('http'):
+            arxiv_id = arxiv_id.split('/')[-1]
+        if arxiv_id.startswith('arXiv:'):
+            arxiv_id = arxiv_id[6:]
+        
+        # Semantic Scholar API
+        url = f"https://api.semanticscholar.org/graph/v1/paper/ARXIV:{arxiv_id}"
+        params = {
+            'fields': 'title,authors,citationCount,citations.title,citations.authors,references.title,references.authors,year,venue'
+        }
+        
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            result = {
+                'title': data.get('title', ''),
+                'citation_count': data.get('citationCount', 0),
+                'year': data.get('year', ''),
+                'venue': data.get('venue', ''),
+                'top_citations': [
+                    {
+                        'title': cite.get('title', ''),
+                        'authors': [author.get('name', '') for author in cite.get('authors', [])]
+                    }
+                    for cite in data.get('citations', [])[:5]
+                ],
+                'top_references': [
+                    {
+                        'title': ref.get('title', ''),
+                        'authors': [author.get('name', '') for author in ref.get('authors', [])]
+                    }
+                    for ref in data.get('references', [])[:5]
+                ]
+            }
+            
+            return json.dumps(result, indent=2)
+        else:
+            return f"Could not find citation data for ArXiv ID: {arxiv_id}"
+            
+    except Exception as e:
+        return f"Error retrieving citation data: {str(e)}"
     
