@@ -170,5 +170,4 @@ def query_research_database(query: str, db_path: str = "research_papers.db") -> 
         return json.dumps(result, indent=2)
         
     except Exception as e:
-        logger.error(f"Error querying database: {e}")
         return f"Error querying database: {str(e)}"
