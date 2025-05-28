@@ -428,3 +428,92 @@ class AlgorandMCPServer:
                     type="text",
                     text=f"Error getting asset info: {str(e)}"
                 )]
+            
+    # ======================= TRANSACTION TOOLS =======================
+        
+        @self.server.call_tool()
+        async def send_payment(arguments: dict) -> List[TextContent]:
+            """Send ALGO payment transaction"""
+            try:
+                sender_private_key = arguments.get("sender_private_key")
+                receiver_address = arguments.get("receiver_address")
+                amount_algo = float(arguments.get("amount_algo", 0))
+                note = arguments.get("note", "")
+                
+                if not all([sender_private_key, receiver_address, amount_algo]):
+                    raise ValueError("sender_private_key, receiver_address, and amount_algo are required")
+                
+                sender_address = address_from_private_key(sender_private_key)
+                amount_microalgo = algos_to_microalgos(amount_algo)
+                
+                # Get suggested parameters
+                params = self.algod_client.suggested_params()
+                
+                # Create transaction
+                txn = PaymentTxn(
+                    sender=sender_address,
+                    sp=params,
+                    receiver=receiver_address,
+                    amt=amount_microalgo,
+                    note=note.encode() if note else None
+                )
+                
+                # Sign transaction
+                signed_txn = txn.sign(sender_private_key)
+                
+                # Send transaction
+                tx_id = self.algod_client.send_transaction(signed_txn)
+                
+                # Wait for confirmation
+                confirmed_txn = transaction.wait_for_confirmation(self.algod_client, tx_id, 4)
+                
+                result = {
+                    "transaction_id": tx_id,
+                    "sender": sender_address,
+                    "receiver": receiver_address,
+                    "amount_algo": amount_algo,
+                    "amount_microalgo": amount_microalgo,
+                    "confirmed_round": confirmed_txn["confirmed-round"],
+                    "fee": confirmed_txn["txn"]["txn"]["fee"],
+                    "note": note,
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error sending payment: {str(e)}"
+                )]
+            
+        @self.server.call_tool()
+        async def get_transaction(arguments: dict) -> List[TextContent]:
+            """Get detailed transaction information"""
+            try:
+                tx_id = arguments.get("transaction_id")
+                if not tx_id:
+                    raise ValueError("transaction_id is required")
+                
+                # Get transaction from indexer
+                txn_info = self.indexer_client.transaction(tx_id)
+                
+                result = {
+                    "transaction_id": tx_id,
+                    "transaction_info": txn_info,
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error getting transaction: {str(e)}"
+                )]
