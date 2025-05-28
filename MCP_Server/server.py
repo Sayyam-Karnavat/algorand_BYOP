@@ -517,3 +517,156 @@ class AlgorandMCPServer:
                     type="text",
                     text=f"Error getting transaction: {str(e)}"
                 )]
+            
+    # ======================= ASSET TOOLS =======================
+        
+        @self.server.call_tool()
+        async def create_asset(arguments: dict) -> List[TextContent]:
+            """Create a new Algorand Standard Asset (ASA)"""
+            try:
+                creator_private_key = arguments.get("creator_private_key")
+                asset_name = arguments.get("asset_name")
+                unit_name = arguments.get("unit_name")
+                total_issuance = int(arguments.get("total_issuance", 1))
+                decimals = int(arguments.get("decimals", 0))
+                default_frozen = arguments.get("default_frozen", False)
+                url = arguments.get("url", "")
+                metadata_hash = arguments.get("metadata_hash")
+                
+                if not all([creator_private_key, asset_name, unit_name]):
+                    raise ValueError("creator_private_key, asset_name, and unit_name are required")
+                
+                creator_address = address_from_private_key(creator_private_key)
+                
+                # Get suggested parameters
+                params = self.algod_client.suggested_params()
+                
+                # Create asset creation transaction
+                txn = AssetCreateTxn(
+                    sender=creator_address,
+                    sp=params,
+                    total=total_issuance,
+                    default_frozen=default_frozen,
+                    unit_name=unit_name,
+                    asset_name=asset_name,
+                    manager=creator_address,
+                    reserve=creator_address,
+                    freeze=creator_address,
+                    clawback=creator_address,
+                    url=url,
+                    metadata_hash=metadata_hash.encode() if metadata_hash else None,
+                    decimals=decimals
+                )
+                
+                # Sign and send transaction
+                signed_txn = txn.sign(creator_private_key)
+                tx_id = self.algod_client.send_transaction(signed_txn)
+                
+                # Wait for confirmation
+                confirmed_txn = transaction.wait_for_confirmation(self.algod_client, tx_id, 4)
+                
+                # Get asset ID
+                asset_id = confirmed_txn["asset-index"]
+                
+                result = {
+                    "transaction_id": tx_id,
+                    "asset_id": asset_id,
+                    "creator": creator_address,
+                    "asset_name": asset_name,
+                    "unit_name": unit_name,
+                    "total_issuance": total_issuance,
+                    "decimals": decimals,
+                    "confirmed_round": confirmed_txn["confirmed-round"],
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error creating asset: {str(e)}"
+                )]
+        
+        @self.server.call_tool()
+        async def transfer_asset(arguments: dict) -> List[TextContent]:
+            """Transfer an Algorand Standard Asset (ASA)"""
+            try:
+                sender_private_key = arguments.get("sender_private_key")
+                receiver_address = arguments.get("receiver_address")
+                asset_id = int(arguments.get("asset_id"))
+                amount = int(arguments.get("amount"))
+                
+                if not all([sender_private_key, receiver_address, asset_id, amount]):
+                    raise ValueError("All parameters are required")
+                
+                sender_address = address_from_private_key(sender_private_key)
+                
+                # Get suggested parameters
+                params = self.algod_client.suggested_params()
+                
+                # Create asset transfer transaction
+                txn = AssetTransferTxn(
+                    sender=sender_address,
+                    sp=params,
+                    receiver=receiver_address,
+                    amt=amount,
+                    index=asset_id
+                )
+                
+                # Sign and send transaction
+                signed_txn = txn.sign(sender_private_key)
+                tx_id = self.algod_client.send_transaction(signed_txn)
+                
+                # Wait for confirmation
+                confirmed_txn = transaction.wait_for_confirmation(self.algod_client, tx_id, 4)
+                
+                result = {
+                    "transaction_id": tx_id,
+                    "sender": sender_address,
+                    "receiver": receiver_address,
+                    "asset_id": asset_id,
+                    "amount": amount,
+                    "confirmed_round": confirmed_txn["confirmed-round"],
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error transferring asset: {str(e)}"
+                )]
+        
+        @self.server.call_tool()
+        async def get_asset_info(arguments: dict) -> List[TextContent]:
+            """Get detailed information about an asset"""
+            try:
+                asset_id = int(arguments.get("asset_id"))
+                
+                # Get asset info
+                asset_info = self.algod_client.asset_info(asset_id)
+                
+                result = {
+                    "asset_id": asset_id,
+                    "asset_info": asset_info,
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error getting asset info: {str(e)}"
+                )]
