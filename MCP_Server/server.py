@@ -670,3 +670,65 @@ class AlgorandMCPServer:
                     type="text",
                     text=f"Error getting asset info: {str(e)}"
                 )]
+            
+    # ======================= BLOCKCHAIN INFO TOOLS =======================
+        
+        @self.server.call_tool()
+        async def get_blockchain_status(arguments: dict) -> List[TextContent]:
+            """Get current blockchain status and network information"""
+            try:
+                status = self.algod_client.status()
+                
+                result = {
+                    "network": self.config.network,
+                    "last_round": status["last-round"],
+                    "last_consensus_version": status["last-consensus-version"],
+                    "next_consensus_version": status.get("next-consensus-version"),
+                    "next_consensus_version_round": status.get("next-consensus-version-round"),
+                    "next_consensus_version_supported": status.get("next-consensus-version-supported"),
+                    "time_since_last_round": status["time-since-last-round"],
+                    "catchup_time": status["catchup-time"],
+                    "stopped_at_unsupported_round": status.get("stopped-at-unsupported-round", False)
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error getting blockchain status: {str(e)}"
+                )]
+        
+        @self.server.call_tool()
+        async def get_block_info(arguments: dict) -> List[TextContent]:
+            """Get information about a specific block"""
+            try:
+                round_number = arguments.get("round")
+                if round_number is None:
+                    # Get latest block
+                    status = self.algod_client.status()
+                    round_number = status["last-round"]
+                else:
+                    round_number = int(round_number)
+                
+                block_info = self.algod_client.block_info(round_number)
+                
+                result = {
+                    "round": round_number,
+                    "block_info": block_info,
+                    "network": self.config.network
+                }
+                
+                return [TextContent(
+                    type="text",
+                    text=json.dumps(result, indent=2)
+                )]
+                
+            except Exception as e:
+                return [TextContent(
+                    type="text",
+                    text=f"Error getting block info: {str(e)}"
+                )]
