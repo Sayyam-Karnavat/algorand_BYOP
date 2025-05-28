@@ -381,6 +381,29 @@ class AlgoUtils:
                         "required": ["private_key", "asset_id", "receiver", "amount"]
                     },
                 ),
+                Tool(
+                    name="application_state",
+                    description="Get application global state",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "app_id": {"type": "integer", "description": "Application ID"}
+                        },
+                        "required": ["app_id"]
+                    },
+                ),
+                Tool(
+                    name="account_app_state",
+                    description="Get account's local state for an application",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"},
+                            "app_id": {"type": "integer", "description": "Application ID"}
+                        },
+                        "required": ["address", "app_id"]
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
