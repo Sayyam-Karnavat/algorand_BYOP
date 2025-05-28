@@ -112,6 +112,122 @@ class AlgoUtils:
                     ),
                 ]
             )
+        
+        @self.server.read_resource()
+        async def handle_read_resource(uri: AnyUrl) -> ReadResourceResult:
+            """Read resource content"""
+            try:
+                if str(uri) == "algorand://network/status":
+                    status = await self._get_network_status()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text",
+                                text=json.dumps(status, indent=2)
+                            )
+                        ]
+                    )
+                elif str(uri) == "algorand://network/params":
+                    params = await self._get_network_params()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text", 
+                                text=json.dumps(params, indent=2)
+                            )
+                        ]
+                    )
+                elif str(uri) == "algorand://blocks/latest":
+                    block = await self._get_latest_block()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text",
+                                text=json.dumps(block, indent=2)
+                            )
+                        ]
+                    )
+                elif str(uri) == "algorand://assets/popular":
+                    assets = await self._get_popular_assets()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text",
+                                text=json.dumps(assets, indent=2)
+                            )
+                        ]
+                    )
+                elif str(uri) == "algorand://apps/popular":
+                    apps = await self._get_popular_apps()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text",
+                                text=json.dumps(apps, indent=2)
+                            )
+                        ]
+                    )
+                elif str(uri) == "algorand://stats/daily":
+                    stats = await self._get_daily_stats()
+                    return ReadResourceResult(
+                        contents=[
+                            TextContent(
+                                type="text",
+                                text=json.dumps(stats, indent=2)
+                            )
+                        ]
+                    )
+                else:
+                    raise ValueError(f"Unknown resource: {uri}")
+                    
+            except Exception as e:
+                logger.error(f"Error reading resource {uri}: {e}")
+                return ReadResourceResult(
+                    contents=[
+                        TextContent(
+                            type="text", 
+                            text=f"Error: {str(e)}"
+                        )
+                    ]
+                )
+            
+        @self.server.list_tools()
+        async def handle_list_tools() -> ListToolsResult:
+            """List all available tools"""
+            tools = [
+                # Account Management Tools
+                Tool(
+                    name="create_account",
+                    description="Generate a new Algorand account with mnemonic",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                ),
+                Tool(
+                    name="account_info",
+                    description="Get detailed account information",
+                    inputSchema={
+                        "type": "object", 
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+                Tool(
+                    name="account_balance",
+                    description="Get account ALGO balance",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+            ]
 
 if __name__ == "__main__":
     algo_config = AlgorandConfig()
