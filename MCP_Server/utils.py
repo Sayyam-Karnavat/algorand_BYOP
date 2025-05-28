@@ -460,6 +460,47 @@ class AlgoUtils:
                         "required": ["private_key"]
                     },
                 ),
+
+                # Search Tools
+                Tool(
+                    name="search_transactions",
+                    description="Search transactions with filters",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "asset_id": {"type": "integer", "description": "Asset ID filter"},
+                            "address": {"type": "string", "description": "Address filter"},
+                            "tx_type": {"type": "string", "description": "Transaction type filter"},
+                            "limit": {"type": "integer", "description": "Number of results", "default": 50}
+                        },
+                        "required": []
+                    },
+                ),
+                Tool(
+                    name="search_assets",
+                    description="Search assets by name or creator",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string", "description": "Asset name filter"},
+                            "creator": {"type": "string", "description": "Creator address filter"},
+                            "limit": {"type": "integer", "description": "Number of results", "default": 50}
+                        },
+                        "required": []
+                    },
+                ),
+                Tool(
+                    name="search_applications",
+                    description="Search applications by creator",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "creator": {"type": "string", "description": "Creator address filter"},
+                            "limit": {"type": "integer", "description": "Number of results", "default": 50}
+                        },
+                        "required": []
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
