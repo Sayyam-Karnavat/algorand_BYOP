@@ -227,6 +227,41 @@ class AlgoUtils:
                         "required": ["address"]
                     },
                 ),
+                Tool(
+                    name="account_assets",
+                    description="List all assets held by an account", 
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+                Tool(
+                    name="account_applications",
+                    description="List applications created or opted into by account",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+                Tool(
+                    name="account_transactions",
+                    description="Get account transaction history",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Account address"},
+                            "limit": {"type": "integer", "description": "Number of transactions", "default": 50},
+                            "next_token": {"type": "string", "description": "Pagination token", "default": ""}
+                        },
+                        "required": ["address"]
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
