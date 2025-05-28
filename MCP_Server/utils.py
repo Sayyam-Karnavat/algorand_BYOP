@@ -313,6 +313,74 @@ class AlgoUtils:
                         "required": []
                     },
                 ),
+
+                # Asset Tools
+                Tool(
+                    name="create_asset",
+                    description="Create a new ASA (Algorand Standard Asset)",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "private_key": {"type": "string", "description": "Creator private key"},
+                            "asset_name": {"type": "string", "description": "Asset name"},
+                            "unit_name": {"type": "string", "description": "Asset unit name"},
+                            "total": {"type": "integer", "description": "Total supply"},
+                            "decimals": {"type": "integer", "description": "Decimal places", "default": 0},
+                            "url": {"type": "string", "description": "Asset URL", "default": ""},
+                            "metadata_hash": {"type": "string", "description": "Metadata hash", "default": ""}
+                        },
+                        "required": ["private_key", "asset_name", "unit_name", "total"]
+                    },
+                ),
+                Tool(
+                    name="asset_info",
+                    description="Get asset information by ID",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "asset_id": {"type": "integer", "description": "Asset ID"}
+                        },
+                        "required": ["asset_id"]
+                    },
+                ),
+                Tool(
+                    name="asset_balances",
+                    description="Get all holders of an asset",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "asset_id": {"type": "integer", "description": "Asset ID"},
+                            "limit": {"type": "integer", "description": "Number of results", "default": 100}
+                        },
+                        "required": ["asset_id"]
+                    },
+                ),
+                Tool(
+                    name="opt_in_asset",
+                    description="Opt into an asset",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "private_key": {"type": "string", "description": "Account private key"},
+                            "asset_id": {"type": "integer", "description": "Asset ID"}
+                        },
+                        "required": ["private_key", "asset_id"]
+                    },
+                ),
+                Tool(
+                    name="transfer_asset",
+                    description="Transfer ASA tokens",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "private_key": {"type": "string", "description": "Sender private key"},
+                            "asset_id": {"type": "integer", "description": "Asset ID"},
+                            "receiver": {"type": "string", "description": "Receiver address"},
+                            "amount": {"type": "integer", "description": "Amount to transfer"}
+                        },
+                        "required": ["private_key", "asset_id", "receiver", "amount"]
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
