@@ -404,6 +404,62 @@ class AlgoUtils:
                         "required": ["address", "app_id"]
                     },
                 ),
+
+            Tool(
+                    name="validate_address",
+                    description="Validate an Algorand address",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Address to validate"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+                Tool(
+                    name="encode_address",
+                    description="Encode public key to address",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "public_key": {"type": "string", "description": "Base64 encoded public key"}
+                        },
+                        "required": ["public_key"]
+                    },
+                ),
+                Tool(
+                    name="decode_address", 
+                    description="Decode address to public key",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "address": {"type": "string", "description": "Algorand address"}
+                        },
+                        "required": ["address"]
+                    },
+                ),
+                Tool(
+                    name="mnemonic_to_private_key",
+                    description="Convert mnemonic to private key",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "mnemonic": {"type": "string", "description": "25-word mnemonic"}
+                        },
+                        "required": ["mnemonic"]
+                    },
+                ),
+                Tool(
+                    name="private_key_to_address",
+                    description="Get address from private key",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "private_key": {"type": "string", "description": "Private key"}
+                        },
+                        "required": ["private_key"]
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
