@@ -502,7 +502,126 @@ class AlgoUtils:
                     },
                 ),
             ]
-
+        @self.server.call_tool()
+        async def handle_call_tool(name: str, arguments: dict) -> CallToolResult:
+            """Handle tool calls"""
+            try:
+                if name == "create_account":
+                    return await self._create_account()
+                elif name == "account_info":
+                    return await self._account_info(arguments["address"])
+                elif name == "account_balance":
+                    return await self._account_balance(arguments["address"])
+                elif name == "account_assets":
+                    return await self._account_assets(arguments["address"])
+                elif name == "account_applications":
+                    return await self._account_applications(arguments["address"])
+                elif name == "account_transactions":
+                    return await self._account_transactions(
+                        arguments["address"],
+                        arguments.get("limit", 50),
+                        arguments.get("next_token", "")
+                    )
+                elif name == "create_payment_txn":
+                    return await self._create_payment_txn(
+                        arguments["sender"],
+                        arguments["receiver"], 
+                        arguments["amount"],
+                        arguments.get("note", "")
+                    )
+                elif name == "send_payment":
+                    return await self._send_payment(
+                        arguments["private_key"],
+                        arguments["receiver"],
+                        arguments["amount"],
+                        arguments.get("note", "")
+                    )
+                elif name == "transaction_info":
+                    return await self._transaction_info(arguments["txid"])
+                elif name == "pending_transactions":
+                    return await self._pending_transactions(arguments.get("max", 10))
+                elif name == "create_asset":
+                    return await self._create_asset(
+                        arguments["private_key"],
+                        arguments["asset_name"],
+                        arguments["unit_name"],
+                        arguments["total"],
+                        arguments.get("decimals", 0),
+                        arguments.get("url", ""),
+                        arguments.get("metadata_hash", "")
+                    )
+                elif name == "asset_info":
+                    return await self._asset_info(arguments["asset_id"])
+                elif name == "asset_balances":
+                    return await self._asset_balances(
+                        arguments["asset_id"],
+                        arguments.get("limit", 100)
+                    )
+                elif name == "opt_in_asset":
+                    return await self._opt_in_asset(
+                        arguments["private_key"],
+                        arguments["asset_id"]
+                    )
+                elif name == "transfer_asset":
+                    return await self._transfer_asset(
+                        arguments["private_key"],
+                        arguments["asset_id"],
+                        arguments["receiver"],
+                        arguments["amount"]
+                    )
+                elif name == "application_info":
+                    return await self._application_info(arguments["app_id"])
+                elif name == "application_state":
+                    return await self._application_state(arguments["app_id"])
+                elif name == "account_app_state":
+                    return await self._account_app_state(
+                        arguments["address"],
+                        arguments["app_id"]
+                    )
+                elif name == "block_info":
+                    return await self._block_info(arguments["round"])
+                elif name == "block_transactions":
+                    return await self._block_transactions(arguments["round"])
+                elif name == "network_status":
+                    return await self._network_status()
+                elif name == "supply_info":
+                    return await self._supply_info()
+                elif name == "suggested_params":
+                    return await self._suggested_params()
+                elif name == "validate_address":
+                    return await self._validate_address(arguments["address"])
+                elif name == "encode_address":
+                    return await self._encode_address(arguments["public_key"])
+                elif name == "decode_address":
+                    return await self._decode_address(arguments["address"])
+                elif name == "mnemonic_to_private_key":
+                    return await self._mnemonic_to_private_key(arguments["mnemonic"])
+                elif name == "private_key_to_address":
+                    return await self._private_key_to_address(arguments["private_key"])
+                elif name == "search_transactions":
+                    return await self._search_transactions(arguments)
+                elif name == "search_assets":
+                    return await self._search_assets(arguments)
+                elif name == "search_applications":
+                    return await self._search_applications(arguments)
+                elif name == "compile_teal":
+                    return await self._compile_teal(arguments["source"])
+                else:
+                    raise ValueError(f"Unknown tool: {name}")
+                    
+            except Exception as e:
+                logger.error(f"Error calling tool {name}: {e}")
+                return CallToolResult(
+                    content=[
+                        TextContent(
+                            type="text",
+                            text=f"Error: {str(e)}"
+                        )
+                    ],
+                    isError=True
+                )
+            
+        
 if __name__ == "__main__":
     algo_config = AlgorandConfig()
 
