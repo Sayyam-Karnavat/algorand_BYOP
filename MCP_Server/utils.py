@@ -65,6 +65,53 @@ class AlgoUtils:
             logger.error(f"Failed to initialize Algorand clients: {e}")
             raise
 
+    def _register_handlers(self):
+        """Register all MCP handlers"""
+        
+        # Core handlers
+        @self.server.list_resources()
+        async def handle_list_resources() -> ListResourcesResult:
+            """List all available Algorand resources"""
+            return ListResourcesResult(
+                resources=[
+                    types.Resource(
+                        uri=AnyUrl("algorand://network/status"),
+                        name="Network Status",
+                        description="Current Algorand network status and health",
+                        mimeType="application/json",
+                    ),
+                    types.Resource(
+                        uri=AnyUrl("algorand://network/params"), 
+                        name="Network Parameters",
+                        description="Algorand network consensus parameters",
+                        mimeType="application/json",
+                    ),
+                    types.Resource(
+                        uri=AnyUrl("algorand://blocks/latest"),
+                        name="Latest Block",
+                        description="Information about the latest block",
+                        mimeType="application/json",
+                    ),
+                    types.Resource(
+                        uri=AnyUrl("algorand://assets/popular"),
+                        name="Popular Assets", 
+                        description="List of popular ASAs on Algorand",
+                        mimeType="application/json",
+                    ),
+                    types.Resource(
+                        uri=AnyUrl("algorand://apps/popular"),
+                        name="Popular Applications",
+                        description="List of popular dApps on Algorand", 
+                        mimeType="application/json",
+                    ),
+                    types.Resource(
+                        uri=AnyUrl("algorand://stats/daily"),
+                        name="Daily Statistics",
+                        description="Daily network statistics and metrics",
+                        mimeType="application/json",
+                    ),
+                ]
+            )
 
 if __name__ == "__main__":
     algo_config = AlgorandConfig()
