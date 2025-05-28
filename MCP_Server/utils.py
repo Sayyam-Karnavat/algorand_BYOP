@@ -262,6 +262,57 @@ class AlgoUtils:
                         "required": ["address"]
                     },
                 ),
+                # Transaction Tools
+                Tool(
+                    name="create_payment_txn",
+                    description="Create a payment transaction",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "sender": {"type": "string", "description": "Sender address"},
+                            "receiver": {"type": "string", "description": "Receiver address"}, 
+                            "amount": {"type": "integer", "description": "Amount in microAlgos"},
+                            "note": {"type": "string", "description": "Transaction note", "default": ""}
+                        },
+                        "required": ["sender", "receiver", "amount"]
+                    },
+                ),
+                Tool(
+                    name="send_payment",
+                    description="Send ALGO payment (requires private key)",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "private_key": {"type": "string", "description": "Sender private key"},
+                            "receiver": {"type": "string", "description": "Receiver address"},
+                            "amount": {"type": "integer", "description": "Amount in microAlgos"},
+                            "note": {"type": "string", "description": "Transaction note", "default": ""}
+                        },
+                        "required": ["private_key", "receiver", "amount"]
+                    },
+                ),
+                Tool(
+                    name="transaction_info",
+                    description="Get transaction details by ID",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "txid": {"type": "string", "description": "Transaction ID"}
+                        },
+                        "required": ["txid"]
+                    },
+                ),
+                Tool(
+                    name="pending_transactions",
+                    description="Get pending transactions from pool",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "max": {"type": "integer", "description": "Maximum transactions", "default": 10}
+                        },
+                        "required": []
+                    },
+                ),
             ]
 
 if __name__ == "__main__":
