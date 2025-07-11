@@ -44,21 +44,7 @@ def scrape_paper_webpage(url: str) -> str:
                 result['title'] = title_elem.get_text().strip()
                 break
         
-        # Try to extract abstract
-        abstract_selectors = ['.abstract', '#abstract', '[class*="abstract"]']
-        for selector in abstract_selectors:
-            abstract_elem = soup.select_one(selector)
-            if abstract_elem:
-                result['abstract'] = abstract_elem.get_text().strip()
-                break
         
-        # Try to extract authors
-        author_selectors = ['.authors', '.author', '[class*="author"]']
-        for selector in author_selectors:
-            author_elems = soup.select(selector)
-            if author_elems:
-                result['authors'] = [elem.get_text().strip() for elem in author_elems]
-                break
         
         # Count references
         ref_selectors = ['[class*="reference"]', '[id*="reference"]', '.ref']
